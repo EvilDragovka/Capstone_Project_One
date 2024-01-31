@@ -1,3 +1,9 @@
+################### IDE SPECIFIC IGNORES ###################
+# Put anything that's IDE specific here
+.vscode/
+
+############################################################
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
