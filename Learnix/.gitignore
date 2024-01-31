@@ -1,0 +1,36 @@
+# macOS system files
+.DS_Store
+
+# Virtual environment
+venv/
+
+# Python bytecode
+__pycache__/
+
+# Environment variables
+.env
+
+# Compiled Python files
+*.pyc
+*.pyo
+*.pyd
+
+# Log files
+*.log
+
+# Backup files
+*.bak
+*.swp
+
+# Database files
+db.sqlite
+../config.py
+
+# Flask related files
+instance/
+
+# Dependency directories
+env/
+app/lib/
+include/
+bin/
