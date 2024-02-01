@@ -40,7 +40,11 @@ The server should run on port 5000.
 
 6. Open another terminal and go to the client folder
 
-7. Start the front-end client
+7. Install the necessary packages in package.json
+
+        $ npm install
+
+8. Start the front-end client
 
         $ npm run dev
 
