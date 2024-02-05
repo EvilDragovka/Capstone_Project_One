@@ -1,16 +1,18 @@
 import React, {useEffect, useState} from 'react'
 
+
 function index() {
   const [message, setMessage] = useState("Loading");
 
   useEffect(() => {
     fetch("http://localhost:5000/api/home")
       .then((response) => response.json())
-      .then((data) => setMessage(data.message));
+      .then((data) => setMessage(data.message))
+        .catch((error) => console.error("Error fetching data:", error)); //temp added this to remove the error msg
   }, []);
 
   return <div>{message}</div>;
-  
+
 }
 
 export default index
