@@ -167,3 +167,5 @@ cython_debug/
 
 #Ignore config.py
 /config.py
+/aiscratch/key.txt
+/client/pnpm-lock.yaml
