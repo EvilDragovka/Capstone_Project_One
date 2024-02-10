@@ -20,6 +20,12 @@ def get_users():
     session.close()
     return users
 
+def get_user(id):
+    session = Session()
+    user = session.query(User).filter(User.id == id).first()
+    session.close()
+    return user
+
 
 def login(identifier, password):
     session = Session()
@@ -76,6 +82,6 @@ def register(username, password, email):
 
 
 if __name__ == "__main__":
-    message = register("new_username0", "password123", "emil@example.com")
+    result = get_user(2)
 
-    print(message)
+    print(result)
