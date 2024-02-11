@@ -1,10 +1,9 @@
 from time import sleep
 import warnings
-from langchain import hub
 from langchain.chains import LLMChain
 from langchain.memory import ConversationBufferWindowMemory
 from langchain_community.chat_models.azureml_endpoint import (AzureMLEndpointApiType,LlamaChatContentFormatter,AzureMLChatOnlineEndpoint)
-from langchain.agents import Tool, AgentExecutor, LLMSingleActionAgent, AgentOutputParser
+from langchain.agents import AgentExecutor, LLMSingleActionAgent
 import os
 
 from langchain_community.utilities.google_search import GoogleSearchAPIWrapper
@@ -55,7 +54,8 @@ tools = [
 # Set up a prompt template which can interpolate the history
 # Comes from OpenAI Cookbook
 template_with_history = """You are Learnix, with the main goal to help people with their academics and research. 
-Use tools when necessary, if you know the answer to the question then Thought: I now know the final answer
+Use tools when necessary, if you know the answer to the question without needing a tool then "Thought"
+must be "I now know the final answer"
 
 You have access to the following tools:
 
@@ -96,7 +96,7 @@ agent = LLMSingleActionAgent(
     allowed_tools=tool_names
 )
 
-memory = ConversationBufferWindowMemory(k=5)
+memory = ConversationBufferWindowMemory(memory_key="chat_history", return_messages=True,k=5)
 agent_executor = AgentExecutor.from_agent_and_tools(agent=agent, tools=tools, verbose=True, memory=memory)
 
 print("""
