@@ -21,11 +21,11 @@ def getKeys(filename, name):
 
 
 #APIs for Azure comes from file, rest comes from Environment Variables
-azureKey = getKeys('key.txt', 'AZURE_API_KEY')
+azureKey = getKeys('../key.txt', 'AZURE_API_KEY')
 
 #Used for Google Search API
-os.environ["GOOGLE_API_KEY"] = getKeys('key.txt', 'GOOGLE_API_KEY')
-os.environ["GOOGLE_CSE_ID"] = getKeys('key.txt', 'GOOGLE_CSE_ID')
+os.environ["GOOGLE_API_KEY"] = getKeys('../key.txt', 'GOOGLE_API_KEY')
+os.environ["GOOGLE_CSE_ID"] = getKeys('../key.txt', 'GOOGLE_CSE_ID')
 # Might add Tavaliy API & DuckDuckGo API depending on how easy it is to use with tools and LLMChain
 
 url = 'https://Llama2-70bchat-cscapstone-serverless.eastus2.inference.ai.azure.com/v1/chat/completions'
@@ -75,6 +75,7 @@ tools = [
 ]
 
 #Agent initialization
+
 
 # Chat Memory Chain, for complete output of entire response use verbose=True
 memory = ConversationBufferWindowMemory(memory_key="chat_history", return_messages=True, k=5)
