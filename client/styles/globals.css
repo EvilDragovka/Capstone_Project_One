@@ -31,3 +31,11 @@ body {
     text-wrap: balance;
   }
 }
+
+nav {
+  background-color: #900c0c;
+}
+
+nav button:hover {
+  background-color: #555;
+}
