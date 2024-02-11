@@ -96,7 +96,7 @@ agent = LLMSingleActionAgent(
     allowed_tools=tool_names
 )
 
-memory = ConversationBufferWindowMemory(memory_key="chat_history", return_messages=True,k=5)
+memory = ConversationBufferWindowMemory(k=5)
 agent_executor = AgentExecutor.from_agent_and_tools(agent=agent, tools=tools, verbose=True, memory=memory)
 
 print("""
