@@ -16,7 +16,7 @@ function WelcomePage() {
                         <input type="password" id="password" name="password" className="border px-3 py-2 rounded-md focus:outline-none focus:border-blue-500" />
                     </div>
                 </form>
-                <Link href="/mainPage" legacyBehavior>
+                <Link href="/" legacyBehavior>
                 <div className="mt-4">
                     <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                         Log In

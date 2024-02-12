@@ -1,0 +1,25 @@
+nav {
+  background-color: #900c0c;
+}
+
+nav button {
+  padding: 15px;
+}
+
+nav div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+nav input[type="text"] {
+  margin: 10px;
+  width: 100%;
+  height: 30px;
+  border-radius: 10px;
+  color: black;
+}
+
+nav button:hover {
+  background-color: #ca6f6f;
+}

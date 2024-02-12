@@ -11,7 +11,7 @@ const SideBar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       <button className="close-btn" onClick={onClose}>
         Close
       </button>
-      {/* Sidebar content goes here */}
+      {/* Search queries go here */}
     </div>
   );
 };

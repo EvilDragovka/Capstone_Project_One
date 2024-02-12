@@ -1,4 +1,5 @@
-// MainPage.jsx
+// MainPage.tsx
+import Layout from "./comp/layout";
 
 import React, { useState } from 'react';
 
@@ -6,9 +7,11 @@ function MainPage() {
     // Your component logic goes here
 
     return (
-        <div>
-            <p>Main Page</p>
-        </div>
+        <Layout>
+            <div>
+                <p>Main Page</p>
+            </div>
+        </Layout>
     );
 }
 
