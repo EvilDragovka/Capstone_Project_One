@@ -38,6 +38,10 @@
     background-color: var(--accent-hover);
 }
 
+.search-query-btn text {
+    font-size: 12pt;
+}
+
 .sidebar-overlay {
     position: fixed;
     top: 0;

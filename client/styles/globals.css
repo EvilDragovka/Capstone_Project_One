@@ -11,6 +11,7 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 255, 255, 255;
   --background-end-rgb: 255, 255, 255;
+  font-size: 16pt;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -40,14 +41,12 @@ body {
 .search-prompt {
   text-align: left;
   padding: 1rem;
-  font-size: 12pt;
 }
 
 .search-results {
   text-align: left;
   padding: 1rem;
   padding-bottom: 100%;
-  font-size: 12pt;
   background-color: #ccc;
 }
 
@@ -58,7 +57,7 @@ body {
 }
 
 .search-heading {
-  font-size: 8pt;
+  font-size: 12pt;
   text-align: center;
   user-select: none;
 }

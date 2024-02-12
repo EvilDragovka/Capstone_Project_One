@@ -13,13 +13,13 @@ const SideBar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         <div className={`sidebar ${isOpen ? 'open' : ''}`}>
             <div className="top-btns">
                 <button className="close-btn" onClick={onClose}>
-                    <i className="fi fi-rr-menu-burger"></i>Close
+                    <i className="fi fi-rr-menu-burger"></i><text>LEARNIX</text>
                 </button>
-                <button><i className="fi fi-br-search"></i><text>Search Query #1</text></button>
-                <button><i className="fi fi-br-search"></i><text>Search Query #2</text></button>
-                <button><i className="fi fi-br-search"></i><text>Search Query #3</text></button>
-                <button><i className="fi fi-br-search"></i><text>Search Query #4</text></button>
-                <button><i className="fi fi-br-search"></i><text>Search Query #5</text></button>
+                <button className='search-query-btn'><i className="fi fi-br-search"></i><text>Search Query #1</text></button>
+                <button className='search-query-btn'><i className="fi fi-br-search"></i><text>Search Query #2</text></button>
+                <button className='search-query-btn'><i className="fi fi-br-search"></i><text>Search Query #3</text></button>
+                <button className='search-query-btn'><i className="fi fi-br-search"></i><text>Search Query #4</text></button>
+                <button className='search-query-btn'><i className="fi fi-br-search"></i><text>Search Query #5</text></button>
                 {/* Search queries go here */}
             </div>
             <div className="bottom-btns">
