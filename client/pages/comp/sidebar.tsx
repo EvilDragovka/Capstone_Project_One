@@ -13,18 +13,18 @@ const SideBar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         <div className={`sidebar ${isOpen ? 'open' : ''}`}>
             <div className="top-btns">
                 <button className="close-btn" onClick={onClose}>
-                    Close
+                    <i className="fi fi-rr-menu-burger"></i>Close
                 </button>
-                <button>Search Query #1</button>
-                <button>Search Query #2</button>
-                <button>Search Query #3</button>
-                <button>Search Query #4</button>
-                <button>Search Query #5</button>
+                <button><i className="fi fi-br-search"></i><text>Search Query #1</text></button>
+                <button><i className="fi fi-br-search"></i><text>Search Query #2</text></button>
+                <button><i className="fi fi-br-search"></i><text>Search Query #3</text></button>
+                <button><i className="fi fi-br-search"></i><text>Search Query #4</text></button>
+                <button><i className="fi fi-br-search"></i><text>Search Query #5</text></button>
                 {/* Search queries go here */}
             </div>
             <div className="bottom-btns">
-                <button>Logout</button>
-                <button>Home</button>
+                <button><i className="fi fi-rr-exit"></i><text>Logout</text></button>
+                <button><i className="fi fi-rr-home"></i><text>Home</text></button>
             </div>
         </div>
     </>

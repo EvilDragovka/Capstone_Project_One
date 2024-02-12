@@ -20,8 +20,11 @@
 .sidebar button {
     width: 100%;
     padding: 15px;
-    margin: 0px;
     text-align: left;
+}
+
+.sidebar button i {
+    margin-right: 10px;
 }
 
 .sidebar .top-btns button {

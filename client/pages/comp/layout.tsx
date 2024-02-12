@@ -34,13 +34,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     };
 
     const closeSearch = () => {
+        // TODO: Clear the search prompt textarea upon closing the search overlay
         setIsSearchOpen(false);
     };
+
     return (
         <body className="App">
             <TopBar onMenuClick={toggleSidebar} onSearchClick={toggleSearch} />
             <SideBar isOpen={isSidebarOpen} onClose={closeSidebar} />
-            <FullScreenSearch isOpen={isSearchOpen} onClose={toggleSearch} />
+            <FullScreenSearch isOpen={isSearchOpen} onClose={closeSearch} />
             {children}
         </body>
     );

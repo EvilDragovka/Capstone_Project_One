@@ -26,17 +26,29 @@
 
 .full-screen-search button {
   padding: 10px;
-  width: 40px;
-  height: 40px;
-  background-color: #00f; /* TEMPORARY: Delete this */
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
 }
 
-.full-screen-search #search-btn {
+.full-screen-search #close-btn i {
+  font-size: 18px;
+  filter: none;
+}
+
+.full-screen-search #search-btn  {
+  font-size: 24px;
+  color: white;
   background-color: var(--accent-color);
   padding: 15px;
   width: 60px;
   height: 60px;
   border-radius: 50%;
+  filter: drop-shadow(0px 3px 0px var(--accent-shadow));
+}
+
+.full-screen-search #search-btn i {
+  vertical-align: top;
 }
 
 .full-screen-search textarea {
