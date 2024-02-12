@@ -3,6 +3,9 @@
 @tailwind utilities;
 
 :root {
+  --accent-color: #900c0c;
+  --accent-border: #b44b4b;
+  --accent-hover: #ca6f6f;
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 255, 255, 255;
   --background-end-rgb: 255, 255, 255;
@@ -41,6 +44,7 @@ body {
 .search-results {
   text-align: left;
   padding: 1rem;
+  padding-bottom: 100%;
   font-size: 12pt;
   background-color: #ccc;
 }

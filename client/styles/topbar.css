@@ -1,5 +1,5 @@
 nav {
-  background-color: #900c0c;
+  background-color: var(--accent-color);
   color: white;
 }
 
@@ -22,5 +22,5 @@ nav input[type="text"] {
 }
 
 nav button:hover {
-  background-color: #ca6f6f;
+  background-color: var(--accent-hover);
 }

@@ -1,6 +1,7 @@
 import "@/styles/globals.css";
 import '@/styles/topbar.css';
 import '@/styles/sidebar.css';
+import '@/styles/fullscreenSearch.css';
 import { useState } from "react";
 import type { AppProps } from "next/app";
 import WelcomePage from './welcomePage';

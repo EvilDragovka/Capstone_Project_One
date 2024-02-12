@@ -18,7 +18,7 @@ function MainPage() {
     return (
         <div>
             <div className="search-prompt">
-                <p className="search-heading">You said:</p>
+                <p className="search-heading">You asked:</p>
                 <p>{testQuery.getPrompt()}</p>
             </div>
             <div className="search-results">

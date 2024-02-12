@@ -2,6 +2,7 @@ import { useRouter } from 'next/router';
 import { ReactNode, useState, useEffect } from 'react';
 import TopBar from "./topbar";
 import SideBar from "./sidebar";
+import FullScreenSearch from "./fullscreenSearch";
 
 interface LayoutProps {
     children: ReactNode;
@@ -18,6 +19,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     // }, []);
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
 
     const toggleSidebar = () => {
       setIsSidebarOpen(!isSidebarOpen);
@@ -26,10 +28,19 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     const closeSidebar = () => {
       setIsSidebarOpen(false);
     };
+
+    const toggleSearch = () => {
+        setIsSearchOpen(!isSearchOpen);
+    };
+
+    const closeSearch = () => {
+        setIsSearchOpen(false);
+    };
     return (
         <body className="App">
-            <TopBar onMenuClick={toggleSidebar} />
+            <TopBar onMenuClick={toggleSidebar} onSearchClick={toggleSearch} />
             <SideBar isOpen={isSidebarOpen} onClose={closeSidebar} />
+            <FullScreenSearch isOpen={isSearchOpen} onClose={toggleSearch} />
             {children}
         </body>
     );
