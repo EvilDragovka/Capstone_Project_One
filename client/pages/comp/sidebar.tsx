@@ -7,12 +7,15 @@ interface SidebarProps {
 
 const SideBar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   return (
-    <div className={`sidebar ${isOpen ? 'open' : ''}`}>
-      <button className="close-btn" onClick={onClose}>
-        Close
-      </button>
-      {/* Search queries go here */}
-    </div>
+    <>
+        <div className={`sidebar-overlay ${isOpen ? 'open' : ''}`} onClick={onClose}></div>
+        <div className={`sidebar ${isOpen ? 'open' : ''}`}>
+        <button className="close-btn" onClick={onClose}>
+            Close
+        </button>
+        {/* Search queries go here */}
+        </div>
+    </>
   );
 };
 

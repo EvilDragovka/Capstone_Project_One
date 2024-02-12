@@ -27,11 +27,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       setIsSidebarOpen(false);
     };
     return (
-        <div className="App">
+        <body className="App">
             <TopBar onMenuClick={toggleSidebar} />
             <SideBar isOpen={isSidebarOpen} onClose={closeSidebar} />
             {children}
-        </div>
+        </body>
     );
 };
 
