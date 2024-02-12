@@ -39,12 +39,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     };
 
     return (
-        <body className="App">
+        <div className="App">
             <TopBar onMenuClick={toggleSidebar} onSearchClick={toggleSearch} />
             <SideBar isOpen={isSidebarOpen} onClose={closeSidebar} />
             <FullScreenSearch isOpen={isSearchOpen} onClose={closeSearch} />
             {children}
-        </body>
+        </div>
     );
 };
 
