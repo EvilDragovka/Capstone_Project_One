@@ -8,6 +8,7 @@ import SignUpPage from './signUpPage';
 import { useRouter } from 'next/router';
 import MainPage from './mainPage';
 import { Main } from "next/document";
+import Layout from "./comp/layout";
 
 export default function App({ Component, pageProps }: AppProps) {
     const router = useRouter();
@@ -21,6 +22,10 @@ export default function App({ Component, pageProps }: AppProps) {
         return <WelcomePage />;
     }
 
-    return <MainPage />;
+    return (
+        <Layout>
+            <MainPage />
+        </Layout>
+    );
 
 }
