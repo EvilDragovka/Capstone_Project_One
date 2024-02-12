@@ -10,10 +10,10 @@ from langchain_community.utilities.google_search import GoogleSearchAPIWrapper
 from langchain_core.tools import Tool
 from CPTemplate import CustomPromptTemplate, CustomOutputParser
 
-warnings.filterwarnings("ignore", category=DeprecationWarning)
-#Parses keys for APIs
-#Created with Github Copilot
-def getKeys(filename, name):
+
+# Parses keys for APIs
+# Created with Github Copilot
+def get_keys(filename, name):
     with open(filename, 'r') as file:
         for line in file:
             words = line.split('=')
@@ -21,17 +21,21 @@ def getKeys(filename, name):
                 return words[1].strip()
 
 
-#APIs for Azure comes from file, rest comes from Environment Variables
-azureKey = getKeys('key.txt', 'AZURE_API_KEY')
+# Additional warnings for testing and debugging
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-#Used for Google Search API
-os.environ["GOOGLE_API_KEY"] = getKeys('key.txt', 'GOOGLE_API_KEY')
-os.environ["GOOGLE_CSE_ID"] = getKeys('key.txt', 'GOOGLE_CSE_ID')
+
+# APIs for Azure comes from file, rest comes from Environment Variables
+azureKey = get_keys('key.txt', 'AZURE_API_KEY')
+
+# Used for Google Search API
+os.environ["GOOGLE_API_KEY"] = get_keys('key.txt', 'GOOGLE_API_KEY')
+os.environ["GOOGLE_CSE_ID"] = get_keys('key.txt', 'GOOGLE_CSE_ID')
 # Might add Tavaliy API & DuckDuckGo API depending on how easy it is to use with tools and LLMChain
 
 url = 'https://Llama2-70bchat-cscapstone-serverless.eastus2.inference.ai.azure.com/v1/chat/completions'
 
-#LLM Model declaration
+# LLM Model declaration
 llama = AzureMLChatOnlineEndpoint(
     endpoint_url=url,
     endpoint_api_type=AzureMLEndpointApiType.serverless,
@@ -96,7 +100,7 @@ agent = LLMSingleActionAgent(
     allowed_tools=tool_names
 )
 
-memory = ConversationBufferWindowMemory(k=5)
+memory = ConversationBufferWindowMemory(k=2)
 agent_executor = AgentExecutor.from_agent_and_tools(agent=agent, tools=tools, verbose=True, memory=memory)
 
 print("""

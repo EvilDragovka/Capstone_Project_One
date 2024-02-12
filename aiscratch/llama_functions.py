@@ -1,3 +1,5 @@
+import sys
+
 from langchain.chains import LLMChain
 from langchain.memory import ConversationBufferWindowMemory
 from langchain_community.chat_models.azureml_endpoint import AzureMLChatOnlineEndpoint, LlamaChatContentFormatter
@@ -10,11 +12,15 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder, Huma
 # (AI generated) Gets APIs and returns key
 # View key.txt for apiname
 def get_api_key(filename: str, apiname: str):
-    with open(filename, 'r') as file:
-        for line in file:
-            words = line.split('=')
-            if words[0] == apiname:
-                return words[1].strip()
+    try:
+        with open(filename, 'r') as file:
+            for line in file:
+                words = line.split('=')
+                if words[0] == apiname:
+                    return words[1].strip()
+    except FileNotFoundError:
+        print("The API key was not found, check that the file exists and is in the proper location.")
+        sys.exit(1)
 
 
 # LLM Model declaration
