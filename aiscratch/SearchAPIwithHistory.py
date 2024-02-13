@@ -100,7 +100,7 @@ agent = LLMSingleActionAgent(
     allowed_tools=tool_names
 )
 
-memory = ConversationBufferWindowMemory(k=2)
+memory = ConversationBufferWindowMemory(k=2, return_messages=True)
 agent_executor = AgentExecutor.from_agent_and_tools(agent=agent, tools=tools, verbose=True, memory=memory)
 
 print("""
