@@ -1,3 +1,5 @@
+from datetime import date
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from config import Config
@@ -72,6 +74,8 @@ def register(username, password, email):
         session.close()
         return False, "Email must be at most 100 characters."
 
+    #TODO add more sanitization and hash for user password
+
     # Create a new user
     new_user = User(username=username, password=password, email=email)
     session.add(new_user)
@@ -100,3 +104,40 @@ def delete_user_by_id(user_id):
         except Exception as e:
             session.rollback()
             return False, f"An error occurred: {e}"
+
+
+from sqlalchemy.exc import SQLAlchemyError
+
+
+def update_user(user_id, **kwargs):
+    session = Session()
+    #TODO sanitize and hash password
+    try:
+        # Fetch the user by ID
+        user = session.query(User).filter(User.id == user_id).first()
+        if user is None:
+            return False, "User not found."
+
+        # Update fields
+        for key, value in kwargs.items():
+            if hasattr(user, key):
+                setattr(user, key, value)
+
+        user.updated_at = date.today()  # Manually update the timestamp, if not automatically handled
+        session.commit()
+        return True, "User successfully updated."
+    except SQLAlchemyError as e:
+        session.rollback()
+        return False, f"Error updating user: {str(e)}"
+    finally:
+        session.close()
+
+if __name__ == "__main__":
+    user_id = 1  # Assuming you want to update the user with id=1
+    new_details = {
+        "email": "newemail@example.com",
+        "username": "newusername"
+    }
+
+    result = update_user(user_id, **new_details)
+    print(result)
