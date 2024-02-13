@@ -4,7 +4,7 @@ import TopBar from "./topbar";
 import SideBar from "./sidebar";
 import FullScreenSearch from "./fullscreenSearch";
 import SearchQuery from '../class/searchQuery';
-import { getSearchHistory, getSearchQuery, pushSearchHistory, setSearchQuery } from '../_app';
+import { getSearchHistory, getSearchQuery, makeLatestSearchQuery, pushSearchHistory, setSearchQuery } from '../_app';
 
 interface LayoutProps {
     children: ReactNode;
@@ -44,7 +44,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     };
 
     const sidebarSearchQuery = (x: number) => {
-        setSearchQuery(x);
+        makeLatestSearchQuery(x);
         sidebarClose();
         router.push('/resultsPage');
     }
