@@ -8,11 +8,13 @@
   height: 100%;
   z-index: 1001;
   transition: top 0.3s ease;
+  pointer-events: none;
 }
 
 .full-screen-search.open {
   top: 0;
   height: 100%;
+  pointer-events: all;
 }
 
 .full-screen-search .search-topbar {
