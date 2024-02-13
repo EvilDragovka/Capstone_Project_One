@@ -22,7 +22,7 @@ def get_keys(filename, name):
 #Langsmith tracking
 os.environ["LANGCHAIN_TRACING_V2"] = "true"
 os.environ["LANGCHAIN_ENDPOINT"] = "https://api.smith.langchain.com"
-os.environ["LANGCHAIN_API_KEY"] = get_keys('key.txt', 'LANGCHAIN_API_KEY')
+os.environ["LANGCHAIN_API_KEY"] = "ls__de882389727f48219891d9e0849bc26b"
 os.environ["LANGCHAIN_PROJECT"] = "Llama2-70bchat-cscapstone"
 client = Client()
 
