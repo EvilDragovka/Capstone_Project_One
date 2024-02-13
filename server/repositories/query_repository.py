@@ -1,3 +1,5 @@
+from datetime import date
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from config import Config
@@ -30,12 +32,22 @@ def get_last_five_queries_by_user_id(user_id):
     queries = session.query(Query).filter_by(user_id=user_id).limit(5).all()
     return queries
 
-def create_query(user_id, user_query):
-    #TODO add connectivity to Llama
-    #TODO acquire response from model
+
+def create_query(user_id, question):
+    # TODO add connectivity to Llama
+    # TODO acquire response from model
     response = ""
     session = Session()
-    query = Query(user_id=user_id, user_query=user_query, )
+    try:
+        new_query = Query(user_id=user_id, question=question, response=response, date=date.today())
+        session.add(new_query)
+        session.commit()
+        return True, "Query successfully created."
+    except SQLAlchemyError as e:
+        session.rollback()
+        return False, f"Error creating query: {str(e)}"
+    finally:
+        session.close()
 
 
 if __name__ == "__main__":
