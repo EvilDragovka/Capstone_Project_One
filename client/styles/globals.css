@@ -10,7 +10,7 @@
   --accent-hover: #ca6f6f;
   --foreground-rgb: 0, 0, 0;
   --background-rgb: #fff;
-  --background-accent-rgb: #ccc;
+  --background-accent-rgb: #dbb;
   --topbar-height: 66px;
   font-size: 16pt;
 }
@@ -18,7 +18,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
-    --background-rgb: #222;
+    --background-rgb: #301818;
     --background-accent-rgb: #000;
   }
 }

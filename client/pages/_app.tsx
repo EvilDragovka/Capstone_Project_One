@@ -81,6 +81,12 @@ export function pushSearchHistory(query: SearchQuery) {
 export function setSearchQuery(i: number) {
     if (i >= 0 && i < searchHistory.length) {
         searchQuery = searchHistory[i];
+    }
+}
+
+export function makeLatestSearchQuery(i: number) {
+    if (i >= 0 && i < searchHistory.length) {
+        searchQuery = searchHistory[i];
         var historyStart = searchHistory.slice(0, i);
         var historyEnd = searchHistory.slice(i + 1, searchHistory.length);
         searchHistory = historyStart.concat(historyEnd);
