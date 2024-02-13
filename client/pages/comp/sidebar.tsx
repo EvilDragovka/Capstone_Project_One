@@ -12,10 +12,16 @@ interface SidebarProps {
 
 // TODO: Make the search query buttons into components
 const SideBar: React.FC<SidebarProps> = ({ isOpen, onClose, onQueryClick, onHomeClick, onLogoutClick }) => {
-    var history = getSearchHistory();
+    // This is so the buttons is sorted from up to down, latest to oldest
+    var history = getSearchHistory().slice().reverse();
+    var historyInd: number[] = [];
+    history.forEach((query, index) => {
+        historyInd.push(index);
+    });
+    historyInd = historyInd.slice().reverse();
     var dom: JSX.Element[] = [];
     history.forEach((query, index) => {
-        dom.push(<button className="search-query-btn" key={index} onClick={() => onQueryClick(index)}><i className="fi fi-br-search"></i><text>{query.getPrompt()}</text></button>);
+        dom.push(<button className="search-query-btn" key={historyInd[index]} onClick={() => onQueryClick(historyInd[index])}><i className="fi fi-br-search"></i><text>{query.getPrompt()}</text></button>);
     });
 
     return (

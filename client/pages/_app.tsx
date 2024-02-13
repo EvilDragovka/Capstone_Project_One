@@ -72,12 +72,18 @@ export function getSearchHistory(): SearchQuery[] {
 
 export function pushSearchHistory(query: SearchQuery) {
     if (searchHistory.length >= 5) {
-        searchHistory.pop();
+        searchHistory.shift();
     }
     searchHistory.push(query);
     searchQuery = query;
 }
 
 export function setSearchQuery(i: number) {
-    searchQuery = searchHistory[i];
+    if (i >= 0 && i < searchHistory.length) {
+        searchQuery = searchHistory[i];
+        var historyStart = searchHistory.slice(0, i);
+        var historyEnd = searchHistory.slice(i + 1, searchHistory.length);
+        searchHistory = historyStart.concat(historyEnd);
+        searchHistory.push(searchQuery);
+    }
 }
