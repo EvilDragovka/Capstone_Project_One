@@ -22,6 +22,9 @@
     width: 100%;
     padding: 15px;
     text-align: left;
+    overflow: hidden;
+    white-space: nowrap; /* Don't forget this one */
+    text-overflow: ellipsis;
 }
 
 .sidebar button i {

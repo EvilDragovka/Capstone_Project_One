@@ -1,17 +1,17 @@
 class SearchQuery {
-    private prompt: string;
-    private result: string;
+    private prompt: string | null;
+    private result: string | null;
 
-    constructor(prompt: string, result: string) {
+    constructor(prompt: string | null, result: string | null) {
         this.prompt = prompt;
         this.result = result;
     }
 
-    public getPrompt(): string {
+    public getPrompt(): string | null {
         return this.prompt;
     }
 
-    public getResult(): string {
+    public getResult(): string | null {
         return this.result;
     }
 }

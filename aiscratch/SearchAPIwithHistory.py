@@ -5,11 +5,10 @@ from langchain.memory import ConversationBufferWindowMemory
 from langchain_community.chat_models.azureml_endpoint import (AzureMLEndpointApiType,LlamaChatContentFormatter,AzureMLChatOnlineEndpoint)
 from langchain.agents import AgentExecutor, LLMSingleActionAgent
 import os
-
-from langchain_community.utilities.google_search import GoogleSearchAPIWrapper
 from langchain_core.tools import Tool
 from CPTemplate import CustomPromptTemplate, CustomOutputParser
-
+from langchain.tools import DuckDuckGoSearchRun
+from langsmith import Client
 
 # Parses keys for APIs
 # Created with Github Copilot
@@ -20,18 +19,19 @@ def get_keys(filename, name):
             if words[0] == name:
                 return words[1].strip()
 
+#Langsmith tracking
+os.environ["LANGCHAIN_TRACING_V2"] = "true"
+os.environ["LANGCHAIN_ENDPOINT"] = "https://api.smith.langchain.com"
+os.environ["LANGCHAIN_API_KEY"] = "ls__de882389727f48219891d9e0849bc26b"
+os.environ["LANGCHAIN_PROJECT"] = "Llama2-70bchat-cscapstone"
+client = Client()
 
 # Additional warnings for testing and debugging
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-
 # APIs for Azure comes from file, rest comes from Environment Variables
 azureKey = get_keys('key.txt', 'AZURE_API_KEY')
-
-# Used for Google Search API
-os.environ["GOOGLE_API_KEY"] = get_keys('key.txt', 'GOOGLE_API_KEY')
-os.environ["GOOGLE_CSE_ID"] = get_keys('key.txt', 'GOOGLE_CSE_ID')
-# Might add Tavaliy API & DuckDuckGo API depending on how easy it is to use with tools and LLMChain
+# Might add Tavaliy API depending on how easy it is to use with tools and LLMChain
 
 url = 'https://Llama2-70bchat-cscapstone-serverless.eastus2.inference.ai.azure.com/v1/chat/completions'
 
@@ -46,10 +46,10 @@ llama = AzureMLChatOnlineEndpoint(
 )
 
 # Tool Chain
-search = GoogleSearchAPIWrapper()
+search = DuckDuckGoSearchRun()
 tools = [
     Tool(
-        name="Google Search",
+        name="DuckDuckGo",
         func=search.run,
         description="Use the tool to search the internet for up-to-date information."
     )
@@ -58,8 +58,8 @@ tools = [
 # Set up a prompt template which can interpolate the history
 # Comes from OpenAI Cookbook
 template_with_history = """You are Learnix, with the main goal to help people with their academics and research. 
-Use tools when necessary, if you know the answer to the question without needing a tool then "Thought"
-must be "I now know the final answer"
+Use tools when necessary, when you know the awnser make sure to state it as the final answer, with Thought
+being "I now know the final answer".
 
 You have access to the following tools:
 
@@ -110,7 +110,7 @@ print("""
     This will be fixed in a different iteration with a better event Chain in place to stop this""")
 
 # Wait for the user to read the note
-sleep(8)
+sleep(3)
 
 # Initial question
 question = input("Ask a question: ")

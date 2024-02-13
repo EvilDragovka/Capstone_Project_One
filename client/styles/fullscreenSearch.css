@@ -20,7 +20,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  background-color: #fff;
+  background-color: var(--background-rgb);
   padding: 15px;
 }
 
@@ -61,12 +61,6 @@
   overflow-wrap: break-word;
 }
 
-@media (prefers-color-scheme: dark) {
-  .full-screen-search .search-topbar {
-    background-color: black;
-  }
-
-  .full-screen-search textarea {
-    background-color: black;
-  }
+.full-screen-search textarea {
+  background-color: var(--background-rgb);
 }

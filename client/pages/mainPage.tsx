@@ -1,6 +1,6 @@
 // MainPage.tsx
 import React, { useState } from 'react';
-import SearchQuery from './class/searchQuery';
+import { getSearchHistory, getSearchPrompt, getSearchQuery, getSearchResult } from './_app';
 
 function MainPage() {
     // Your component logic goes here
@@ -11,20 +11,17 @@ function MainPage() {
     //      - If the search results are ready, display the search results
     //      - If the app is loading an old search query, display a loading screen
 
-    var testQuery = new SearchQuery("What is love?", "Baby don't hurt me\n\
-    Don't hurt me\n\
-    No more");
-    // The results page
+    var hasSearchHistory: boolean = getSearchHistory().length > 0;
     return (
-        <div>
-            <div className="search-prompt">
-                <p className="search-heading">You asked:</p>
-                <p>{testQuery.getPrompt()}</p>
+        <div className="main-page">
+            <div className="main-welcome">
+                <p id="main-greeting">Welcome!</p>
+                {!hasSearchHistory && <p id="main-sub-greeting">Make the first step!</p>}
+                {hasSearchHistory && <p id="main-sub-greeting">Keep at it!</p>}
             </div>
-            <div className="search-results">
-                <p className="search-heading">Learnix says:</p>
-                <p>{testQuery.getResult()}</p>
-            </div>
+            {hasSearchHistory && <div className="search-results">
+                <p id="main-results-heading">Your recent search results:</p>
+            </div>}
         </div>
     );
 }
