@@ -9,27 +9,23 @@
   --accent-border: #b44b4b;
   --accent-hover: #ca6f6f;
   --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 255, 255, 255;
-  --background-end-rgb: 255, 255, 255;
+  --background-rgb: #fff;
+  --background-accent-rgb: #ccc;
+  --topbar-height: 66px;
   font-size: 16pt;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    --background-rgb: #222;
+    --background-accent-rgb: #000;
   }
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    rgb(var(--background-end-rgb))
-  )
-  rgb(var(--background-start-rgb));
+  background-color: var(--background-rgb);
 }
 
 @layer utilities {
@@ -46,14 +42,7 @@ body {
 .search-results {
   text-align: left;
   padding: 1rem;
-  padding-bottom: 100%;
-  background-color: #ccc;
-}
-
-@media (prefers-color-scheme: dark) {
-  .search-results {
-    background-color: #222;
-  }
+  background-color: var(--background-accent-rgb);;
 }
 
 .search-heading {
@@ -68,4 +57,47 @@ button i {
 
 button i, button text {
   filter: drop-shadow(1px 2px 0px var(--accent-shadow));
+}
+
+.main-page, .results-page {
+  position: absolute;
+  display: flex;
+  top: var(--topbar-height);
+  height: calc(100% - var(--topbar-height));
+  width: 100%;
+  justify-content: space-between;
+  flex-direction: column;
+}
+
+.main-page {
+  user-select: none;
+}
+
+.results-page {
+  justify-content: stretch;
+}
+
+.main-welcome {
+  display: flex;
+  flex: 1;
+  overflow: auto;
+  height: calc(100% - 66px);
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+#main-greeting {
+  font-size: 32pt;
+  font-weight: bolder;
+}
+
+#main-sub-greeting {
+  font-size: 14pt;
+}
+
+#main-results-heading {
+  font-size: 12pt;
+  font-weight: bolder;
 }
