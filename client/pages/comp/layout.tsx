@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { ReactNode, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import TopBar from "./topbar";
 import SideBar from "./sidebar";
 import FullScreenSearch from "./fullscreenSearch";
@@ -24,12 +24,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
     // TODO: Redirect to the welcomePage if the user is not logged in
     const router = useRouter();
-    // useEffect(() => {
-    //     const isLoggedIn = localStorage.getItem('loggedIn') === 'true'; // Your authentication logic here
+     //useEffect(() => {
+     //    const isLoggedIn = localStorage.getItem('loggedIn') === 'true'; // Your authentication logic here
     //     if (!isLoggedIn) {
     //         router.push('/welcomePage');
     //     }
-    // }, []);
+   //  }, []);
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
