@@ -2,6 +2,8 @@ import "@/styles/globals.css";
 import '@/styles/topbar.css';
 import '@/styles/sidebar.css';
 import '@/styles/fullscreenSearch.css';
+import '@/styles/welcomePage.css';
+import '@/styles/signUpPage.css';
 import { useState } from "react";
 import type { AppProps } from "next/app";
 import WelcomePage from './welcomePage';
@@ -26,7 +28,7 @@ export default function App({ Component, pageProps }: AppProps) {
     if (router.pathname === '/signUpPage') {
         return <SignUpPage />;
     }
-    
+
     if (router.pathname === '/welcomePage') {
         return <WelcomePage />;
     }
@@ -38,7 +40,7 @@ export default function App({ Component, pageProps }: AppProps) {
     //  - Of course, each query should be associated with a user ID
     //  - So no one can access other people's queries
     if (router.pathname.indexOf('/resultsPage') != -1 && searchQuery) {
-        
+
         return (
             <Layout>
                 <ResultsPage />
