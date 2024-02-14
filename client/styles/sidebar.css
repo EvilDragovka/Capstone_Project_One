@@ -27,6 +27,7 @@
     overflow: hidden;
     white-space: nowrap; /* Don't forget this one */
     text-overflow: ellipsis;
+    transition: background-color 0.1s ease;
 }
 
 .sidebar button i {
