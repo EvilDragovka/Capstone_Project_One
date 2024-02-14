@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
+
 function SignUpPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -17,12 +18,12 @@ function SignUpPage() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-            <div className="bg-white p-6 rounded-md shadow-md w-full max-w-md flex flex-col items-center">
-                <h1 className="text-2xl md:text-4xl font-bold mb-4 text-center">Sign Up</h1>
-                <form className="flex flex-col space-y-4 w-full" onSubmit={handleSubmit}>
-                    <div className="flex flex-col">
-                        <label htmlFor="email" className="text-sm md:text-base font-semibold text-gray-600">
+        <div className="signup-container">
+            <div className="signup-form-container">
+                <h1 className="signup-heading">Sign Up</h1>
+                <form className="signup-form" onSubmit={handleSubmit}>
+                    <div className="signup-form-group">
+                        <label htmlFor="email" className="signup-label">
                             Email:
                         </label>
                         <input
@@ -31,11 +32,11 @@ function SignUpPage() {
                             name="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="border px-3 py-2 rounded-md focus:outline-none focus:border-blue-500"
+                            className="signup-input"
                         />
                     </div>
-                    <div className="flex flex-col relative">
-                        <label htmlFor="password" className="text-sm md:text-base font-semibold text-gray-600">
+                    <div className="signup-form-group relative">
+                        <label htmlFor="password" className="signup-label">
                             Password:
                         </label>
                         <input
@@ -44,25 +45,26 @@ function SignUpPage() {
                             name="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="border px-3 py-2 rounded-md focus:outline-none focus:border-blue-500"
+                            className="signup-input"
                         />
                         <button
                             type="button"
                             onClick={handlePasswordVisibility}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                            className="password-toggle-button"
                         >
                             {showPassword ? 'Hide' : 'Show'}
                         </button>
                     </div>
                     <Link href="/" legacyBehavior>
-                    <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                        Sign Up
-                    </button>
+                        <button type="submit" className="signup-button">
+                            Sign Up
+                        </button>
                     </Link>
                 </form>
             </div>
         </div>
     );
-}
+};
+
 
 export default SignUpPage;
