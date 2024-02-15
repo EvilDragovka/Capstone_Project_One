@@ -30,6 +30,7 @@ def get_all_queries_by_user_id(user_id):
 def get_last_five_queries_by_user_id(user_id):
     session = Session()
     queries = session.query(Query).filter_by(user_id=user_id).limit(5).all()
+    session.close()
     return queries
 
 

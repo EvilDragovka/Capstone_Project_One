@@ -1,5 +1,6 @@
 .venv/
 config.py
+.DS_Store
 
 *.pyc
 __pycache__/
