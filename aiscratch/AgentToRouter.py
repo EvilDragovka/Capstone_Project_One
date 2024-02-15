@@ -17,8 +17,6 @@ from langchain.memory import ConversationBufferWindowMemory
 
 # APIs for Azure comes from file, rest comes from Environment Variables
 azureKey = get_api_key('key.txt', 'AZURE_API_KEY')
-os.environ["TAVILY_API_KEY"] = get_api_key('key.txt', 'TAVILY_API_KEY')
-
 url = 'https://Llama2-70bchat-cscapstone-serverless.eastus2.inference.ai.azure.com/v1/chat/completions'
 
 # LLM Model declaration
