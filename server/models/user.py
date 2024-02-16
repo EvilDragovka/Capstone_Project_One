@@ -17,3 +17,11 @@ class User(Base):
                 f"username = '{self.username}'\n\t"
                 f"email = '{self.email}'\n\t"
                 f"password = '{self.password}'\n\n")
+
+    def to_dict(self):
+        return {
+            "id" : self.id,
+            "username" : self.username,
+            "email" : self.email,
+            "password" : self.password
+        }

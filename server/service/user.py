@@ -9,29 +9,31 @@ import re
 import bcrypt
 import logging
 
-
 engine = create_engine(
     Config.CONNECTION_TO_DATABASE,
     connect_args={
-        "ssl":{
-            "ssl_ca":"etc/ssl/cert.pem"
+        "ssl": {
+            "ssl_ca": "etc/ssl/cert.pem"
         }
     }
 )
 
 Session = sessionmaker(bind=engine)
 
-def list():
+
+def get_all():
     session = Session()
     users = session.query(User).all()
     session.close()
     return users
+
 
 def get_by_id(user_id):
     session = Session()
     user = session.query(User).filter(User.id == user_id).first()
     session.close()
     return user
+
 
 def login(identifier, password):
     session = Session()
@@ -51,9 +53,11 @@ def login(identifier, password):
         return False, "Invalid username or password."
 
 
-
 def register(username, email, password):
     session = Session()
+
+    if not username or not email or not password:
+        return False, "Missing required fields."
 
     # Check if username or email is already taken
     existing_user = session.query(User).filter(User.username == username).first()
@@ -115,8 +119,6 @@ def delete_by_id(user_id):
             return False, f"An error occurred: {e}"
 
 
-
-
 def update(user_id, **kwargs):
     with Session() as session:  # Use context management for the session
         try:
@@ -155,18 +157,3 @@ def strong_password(password):
     if not re.search("[!@#$%^&*(),.?\":{}|<>]", password):
         return False, "Password must contain at least one special character."
     return True, ""
-
-
-if __name__ == "__main__":
-
-    #register("wifi", "wifi@icloud.com", "Password#872")
-
-    user_id = 4  # Example user ID
-    update_data = {
-        "username": "test_user",
-        "email": "new_email@example.com",
-        "password": "newSecurePassword123!"
-    }
-
-    result = update(user_id, **update_data)
-    print(result)
