@@ -1,4 +1,5 @@
 import os
+from datetime import date
 from langchain import hub
 from langchain.agents import AgentExecutor, load_tools, create_react_agent
 from langchain.schema.runnable.base import RunnableMap
@@ -12,11 +13,10 @@ from langchain_core.tools import Tool
 from langsmith import Client
 from aiscratch.llama_functions import get_api_key
 from langchain_community.tools.semanticscholar.tool import SemanticScholarQueryRun
+from langchain.memory import ConversationBufferWindowMemory
 
 # APIs for Azure comes from file, rest comes from Environment Variables
 azureKey = get_api_key('key.txt', 'AZURE_API_KEY')
-os.environ["TAVILY_API_KEY"] = get_api_key('key.txt', 'TAVILY_API_KEY')
-
 url = 'https://Llama2-70bchat-cscapstone-serverless.eastus2.inference.ai.azure.com/v1/chat/completions'
 
 # LLM Model declaration
@@ -40,9 +40,12 @@ client = Client()
 prompt = PromptTemplate.from_template("""
     You are called Learnix, with the main goal to help people with their academics and research.
     Choose one of the following actions:
-     - If the question is a greeting or has "you","your", "Learnix", or "I", references you as an AI, then respond ONLY with 'GENERAL'
-     - If the question needs more information and you want to search the web, and is not in your training set, respond ONLY with 'SEARCH'
-     - If the question is about specific academic papers, meaning a DOI number or specific academic author, respond ONLY with 'PAPER'
+     - If the question is a greeting or has "you","your", "Learnix", or "I", references you as an AI, then respond ONLY
+      with 'GENERAL'
+     - If the question needs more information and you want to search the web and uses words such as "recent", "current",
+      or time / day of the year, and is not in your training set, respond ONLY with 'SEARCH'
+     - If the question is about specific academic papers, meaning a DOI number or specific academic author, respond ONLY
+      with 'PAPER'
      - If the question could be answered with some more information from academic papers, respond ONLY with 'PAPERSEARCH'
      - If you already have an answer or don't know which to respond to, respond ONLY with 'ANSWER'
     
@@ -51,6 +54,11 @@ prompt = PromptTemplate.from_template("""
 )
 
 search_prompt = hub.pull("zac-dot/react-adjusted")
+
+# Memory Declaration
+memkey = "default" #Change when being used in final project
+router_memory = ConversationBufferWindowMemory(k=5) #volatile
+
 # Tools declaration
 #DDG search tool
 search_wrapper = DuckDuckGoSearchAPIWrapper(region="us", max_results=3)
@@ -80,10 +88,12 @@ router_chain = prompt | llama | StrOutputParser()
 
 # Base Chain
 base_chain = PromptTemplate.from_template("""
+You are called Learnix, with the main goal to help people with their academics and research.
 Keep the answer down to 300 words max, but make sure to give a detailed answer.
-
+The current year is""" + str(date.today().year) + """ and the current date is """ + str(date.today()) + """.
 Respond to the question:
 Question: {input}""") | llama | StrOutputParser()
+
 
 # The routing logic, cunt of it all
 def chain_decision(output):
@@ -94,23 +104,29 @@ def chain_decision(output):
         print("...searching the web...\n")
         return search_executor
     elif output["action"] == "PAPER":
+        print("...looking for specific paper(s)...\n")
         return "paper"
     elif output["action"] == "PAPERSEARCH":
+        print("...looking for papers...\n")
         return "papersearch"
     else:
         raise ValueError
+
 
 chain = RunnableMap({
     "action": router_chain,
     "input": lambda x: x["question"]
 }) | chain_decision
 
+
 # Initial question
 question = input("Ask Learnix: ")
 response = chain.invoke({"question": question})
-print(response)
+print(response.get("input"))
+print(response.get("output"))
 
 while True:
     question = input("Ask Learnix more: ")
     response = chain.invoke({"question": question})
-    print(response)
+    print(response.get("input"))
+    print(response.get("output"))
