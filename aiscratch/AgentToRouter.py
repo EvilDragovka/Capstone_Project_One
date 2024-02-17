@@ -44,7 +44,7 @@ prompt = PromptTemplate.from_template("""
       with 'GENERAL'
      - If the question needs more information and you want to search the web and uses words such as "recent", "current",
       or time / day of the year, and is not in your training set, respond ONLY with 'SEARCH'
-     - If the question is about specific academic papers, meaning a DOI number or specific academic author, respond ONLY
+     - If the question is about specific academic papers, meaning a DOI number (ex: 1888.083919) or specific academic author, respond ONLY
       with 'PAPER'
      - If the question could be answered with some more information from academic papers, respond ONLY with 'PAPERSEARCH'
      - If you already have an answer or don't know which to respond to, respond ONLY with 'ANSWER'
@@ -53,7 +53,8 @@ prompt = PromptTemplate.from_template("""
     """
 )
 
-search_prompt = hub.pull("zac-dot/react-adjusted")
+react_prompt = hub.pull("zac-dot/react-adjusted")
+papersearch_prompt = hub.pull("zac-dot/react-adjusted-papersearch")
 
 # Memory Declaration
 memkey = "default" #Change when being used in final project
@@ -71,6 +72,8 @@ search_tool = [
     ),
 ]
 
+
+
 # Arxiv search tool, and semantic scholar
 arxivsearch = load_tools(["arxiv"])
 semanticsearch = [SemanticScholarQueryRun()]
@@ -78,11 +81,17 @@ semanticsearch = [SemanticScholarQueryRun()]
 search_agent = create_react_agent(
     llm=llama,
     tools=search_tool,
-    prompt=search_prompt,
+    prompt=react_prompt,
+)
+
+research_agent = create_react_agent(
+    llm=llama,
+    tools=arxivsearch,
+    prompt=papersearch_prompt,
 )
 
 search_executor = AgentExecutor(agent=search_agent, tools=search_tool, verbose=True, return_intermediate_steps=True, max_iterations=4)
-
+research_executor = AgentExecutor(agent=research_agent, tools=arxivsearch, verbose=True, return_intermediate_steps=True, max_iterations=2, handle_parsing_errors=True)
 # Defining the routing chain
 router_chain = prompt | llama | StrOutputParser()
 
@@ -103,12 +112,9 @@ def chain_decision(output):
     elif output["action"] == "SEARCH":
         print("...searching the web...\n")
         return search_executor
-    elif output["action"] == "PAPER":
-        print("...looking for specific paper(s)...\n")
-        return "paper"
-    elif output["action"] == "PAPERSEARCH":
-        print("...looking for papers...\n")
-        return "papersearch"
+    elif output["action"] == "PAPER" or "PAPERSEARCH":
+        print("...looking for papers or specific paper(s)...\n")
+        return research_executor
     else:
         raise ValueError
 
