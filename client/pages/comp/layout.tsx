@@ -55,10 +55,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     }
 
     const sidebarLogout = () => {
-        sidebarClose();
+        // TODO: Remove the router.push. The page should be reloaded with the layout
+        //  redirecting to the welcomePage if the user is not logged in
+        router.push('/welcomePage');
         // localStorage.setItem('loggedIn', 'false');
         window.location.reload();
-        router.push('/welcomePage');
     }
 
     // Search overlay behavior
