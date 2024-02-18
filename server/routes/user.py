@@ -4,19 +4,17 @@ import service.user as user_service
 user_bp = Blueprint('user_bp', __name__)
 
 
-@user_bp.route('', methods=['GET'])
+@user_bp.route('/', methods=['GET'])
 def get_all():
     users = user_service.get_all()
-    users_list = [user.to_dict() for user in users]
-    return jsonify(users_list)
+    return jsonify([user.to_dict() for user in users])
 
 
 @user_bp.route('/<int:user_id>', methods=['GET'])
 def get_by_id(user_id):
     user = user_service.get_by_id(user_id)
     if user:
-        user = user.to_dict()
-        return jsonify(user), 200
+        return jsonify(user.to_dict()), 200
     else:
         return jsonify({'error': 'User not found.'}), 404
 

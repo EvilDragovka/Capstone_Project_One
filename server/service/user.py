@@ -35,6 +35,13 @@ def get_by_id(user_id):
     return user
 
 
+def get_by_identifier(identifier):
+    session = Session()
+    user = session.query(User).filter(or_(User.username == identifier, User.email == identifier)).first()
+    session.close()
+    return user
+
+
 def login(identifier, password):
     session = Session()
 
@@ -135,7 +142,6 @@ def update(user_id, **kwargs):
                         value = bcrypt.hashpw(value.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
                     setattr(user, key, value)
 
-            user.updated_at = date.today()  # Manually update the timestamp, if not automatically handled
             session.commit()
             return True, "User successfully updated."
         except SQLAlchemyError as e:

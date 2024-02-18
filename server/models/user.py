@@ -3,6 +3,7 @@ from sqlalchemy import Column, Integer, String
 
 Base = sqlalchemy.orm.declarative_base()
 
+
 class User(Base):
     __tablename__ = 'users'
 
@@ -20,8 +21,8 @@ class User(Base):
 
     def to_dict(self):
         return {
-            "id" : self.id,
-            "username" : self.username,
-            "email" : self.email,
-            "password" : self.password
+            "id": self.id,
+            "username": self.username,
+            "email": self.email,
+            "password": self.password
         }
