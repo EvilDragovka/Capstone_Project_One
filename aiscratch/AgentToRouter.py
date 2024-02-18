@@ -48,7 +48,9 @@ prompt = PromptTemplate.from_template("""
       with 'PAPER'
      - If the question could be answered with some more information from academic papers, respond ONLY with 'PAPERSEARCH'
      - If you already have an answer or don't know which to respond to, respond ONLY with 'ANSWER'
+     - If you don't know the answer and don't choose any previous options, respond ONLY with 'GENERAL'
     
+    If there was a previous conversation, here is the history: {chat_history}
     Question: {question}
     """
 )
@@ -71,8 +73,6 @@ search_tool = [
         description="Use the tool to search the internet for up-to-date information."
     ),
 ]
-
-
 
 # Arxiv search tool, and semantic scholar
 arxivsearch = load_tools(["arxiv"])
@@ -97,9 +97,10 @@ router_chain = prompt | llama | StrOutputParser()
 
 # Base Chain
 base_chain = PromptTemplate.from_template("""
-You are called Learnix, with the main goal to help people with their academics and research.
-Keep the answer down to 300 words max, but make sure to give a detailed answer.
+You are called Learnix, but do not mention yourself, with the main goal to help people with their academics and research.
+Keep the answer under 300 words max, but make sure to give a detailed answer.
 The current year is""" + str(date.today().year) + """ and the current date is """ + str(date.today()) + """.
+If there was a previous conversation, here is the history: {chat_history}
 Respond to the question:
 Question: {input}""") | llama | StrOutputParser()
 
@@ -108,7 +109,9 @@ Question: {input}""") | llama | StrOutputParser()
 def chain_decision(output):
     if output["action"] == "GENERAL" or output["action"] == "ANSWER":
         print( "...thinking...\n")
-        return base_chain
+        output["chat_history"] = router_memory.load_memory_variables({})
+        temp_dict = {'input': output.get("input"), 'output': base_chain.invoke(output)}
+        return temp_dict
     elif output["action"] == "SEARCH":
         print("...searching the web...\n")
         return search_executor
@@ -127,12 +130,25 @@ chain = RunnableMap({
 
 # Initial question
 question = input("Ask Learnix: ")
-response = chain.invoke({"question": question})
+response = chain.invoke(
+    {
+        "question": question,
+        "chat_history": router_memory.load_memory_variables({})
+    }
+)
+
+router_memory.save_context({"input": response.get("input")}, {"output": response.get("input")})
 print(response.get("input"))
 print(response.get("output"))
 
 while True:
     question = input("Ask Learnix more: ")
-    response = chain.invoke({"question": question})
+    response = chain.invoke(
+        {
+            "question": question,
+            "chat_history": router_memory.load_memory_variables({})
+        }
+    )
+    router_memory.save_context({"input": response.get("input")}, {"output": response.get("input")})
     print(response.get("input"))
     print(response.get("output"))
