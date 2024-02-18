@@ -9,7 +9,9 @@
   --accent-border: #b44b4b;
   --accent-hover: #ca6f6f;
   --foreground-rgb: 0, 0, 0;
+  --foreground-grey-accent: #634b4b;
   --background-rgb: #fff;
+  --background-grey-accent: #ddd;
   --background-accent-rgb: #dbb;
   --topbar-height: 66px;
   font-size: 16pt;
@@ -18,8 +20,10 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
+    --foreground-grey-accent: #9f8585;
     --background-rgb: #301818;
     --background-accent-rgb: #000;
+    --background-grey-accent: #333;
   }
 }
 

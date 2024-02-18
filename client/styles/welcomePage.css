@@ -4,11 +4,11 @@
     align-items: center;
     justify-content: center;
     height: 100vh;
-    background-color: #f3f4f6;
+    background-color: var(--background-accent-rgb);
 }
 
 .welcome-content {
-    background-color: #ffffff;
+    background-color: var(--background-rgb);
     padding: 1.5rem;
     border-radius: 0.5rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -40,15 +40,22 @@
 .form-label {
     font-size: 0.875rem;
     font-weight: bold;
-    color: #4b5563;
+    color: var(--foreground-grey-accent);
 }
 
 .form-input {
     border: 1px solid #d1d5db;
+    background-color: var(--background-grey-accent);
     padding: 0.5rem;
     border-radius: 0.25rem;
     outline: none;
     transition: border-color 0.2s ease-in-out;
+}
+
+@media (prefers-color-scheme: dark) {
+    .form-input {
+        border: 1px solid #6b7280;
+    }
 }
 
 .form-input:focus {
