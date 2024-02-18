@@ -11,7 +11,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import PromptTemplate
 from langchain_core.tools import Tool
 from langsmith import Client
-from aiscratch.llama_functions import get_api_key
+from server.service.llama_functions import get_api_key
 from langchain_community.tools.semanticscholar.tool import SemanticScholarQueryRun
 from langchain.memory import ConversationBufferWindowMemory
 
