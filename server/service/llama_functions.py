@@ -6,22 +6,7 @@ from langchain_community.chat_models.azureml_endpoint import AzureMLChatOnlineEn
 from langchain_community.llms.azureml_endpoint import AzureMLEndpointApiType
 from langchain_core.messages import SystemMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder, HumanMessagePromptTemplate
-
-
-# Get API key from file
-# (AI generated) Gets APIs and returns key
-# View key.txt for apiname
-# DO NOT USE DIRECTLY IN FLASK
-def get_api_key(filename: str, apiname: str):
-    try:
-        with open(filename, 'r') as file:
-            for line in file:
-                words = line.split('=')
-                if words[0] == apiname:
-                    return words[1].strip()
-    except FileNotFoundError:
-        print("The API key was not found, check that the file exists and is in the proper location.")
-        sys.exit(1)
+from config import ConfigAzure
 
 
 # LLM Model declaration
@@ -29,7 +14,7 @@ def get_api_key(filename: str, apiname: str):
 # Azure expects. Returns model
 # DO NOT USE DIRECTLY IN FLASK
 def llm():
-    azure_key = get_api_key('key.txt', 'AZURE_API_KEY')
+    azure_key = ConfigAzure.azure_key
     url = 'https://Llama2-70bchat-cscapstone-serverless.eastus2.inference.ai.azure.com/v1/chat/completions'
     model = AzureMLChatOnlineEndpoint(
         endpoint_url=url,
@@ -47,7 +32,7 @@ def llm():
 # Temperature is creativity, max_tokens is the length of the response, and presence_penalty is the
 # uniqueness of the response (from -2 to 2, higher being more unique)
 def adjusted_llm(temperature: float, max_tokens: int, presence_penalty: float):
-    azure_key = get_api_key('/aiscratch/key.txt', 'AZURE_API_KEY')
+    azure_key = ConfigAzure.azure_key
     url = 'https://Llama2-70bchat-cscapstone-serverless.eastus2.inference.ai.azure.com/v1/chat/completions'
     model = AzureMLChatOnlineEndpoint(
         endpoint_url=url,

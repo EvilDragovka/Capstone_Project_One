@@ -12,7 +12,7 @@ from langchain_core.runnables import RunnableMap
 from langchain_core.tools import Tool
 from langsmith import Client
 
-from server.service.llama_functions import get_api_key, llm
+from server.service.llama_functions import llm
 
 
 # Alot of this code is pulled from AgentToRouter.py and llama_functions.py

@@ -11,12 +11,12 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import PromptTemplate
 from langchain_core.tools import Tool
 from langsmith import Client
-from server.service.llama_functions import get_api_key
 from langchain_community.tools.semanticscholar.tool import SemanticScholarQueryRun
 from langchain.memory import ConversationBufferWindowMemory
+from config import ConfigAzure
 
 # APIs for Azure comes from file, rest comes from Environment Variables
-azureKey = get_api_key('key.txt', 'AZURE_API_KEY')
+azureKey = ConfigAzure.azure_key
 url = 'https://Llama2-70bchat-cscapstone-serverless.eastus2.inference.ai.azure.com/v1/chat/completions'
 
 # LLM Model declaration

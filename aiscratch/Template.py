@@ -2,10 +2,12 @@ import os
 from langchain_community.chat_models.azureml_endpoint import AzureMLChatOnlineEndpoint, LlamaChatContentFormatter
 from langchain_community.llms.azureml_endpoint import AzureMLEndpointApiType
 from langsmith import Client
-from server.service.llama_functions import get_api_key
+
+import config
+from config import ConfigAzure
 
 # APIs for Azure comes from file, rest comes from Environment Variables
-azureKey = get_api_key('key.txt', 'AZURE_API_KEY')
+azureKey = ConfigAzure.azure_key
 
 url = 'https://Llama2-70bchat-cscapstone-serverless.eastus2.inference.ai.azure.com/v1/chat/completions'
 
