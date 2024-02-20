@@ -10,7 +10,6 @@ import WelcomePage from './welcomePage';
 import SignUpPage from './signUpPage';
 import { useRouter } from 'next/router';
 import MainPage from './mainPage';
-import { Main } from "next/document";
 import Layout from "./comp/layout";
 import SearchQuery from "./class/searchQuery";
 import ResultsPage from "./resultsPage";
