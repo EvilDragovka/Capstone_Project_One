@@ -4,6 +4,7 @@
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
+    "noEmit": false,
     "outDir": "out",
     "esModuleInterop": true,
     "module": "esnext",
