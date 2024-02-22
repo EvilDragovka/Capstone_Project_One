@@ -70,4 +70,4 @@ Don't forget to re-run `npm install` to install all necessary packages.
 
         npx cap sync
 
-5. Open the `client/android` folder in Android Studio and run it from there
+5. Open the `client/android` folder in Android Studio and build/run it from there
