@@ -49,3 +49,25 @@ The server should run on port 5000.
         $ npm run dev
 
 The client should run on port 3000.
+
+## Android Usage
+
+Make sure you have [Android Studio](https://developer.android.com/studio/install) installed, Developer Mode is enabled in your Android device, and USB Debugging or Wi-Fi Debugging is enabled on your Android. You can also use an Android Emulator.
+
+Don't forget to re-run `npm install` to install all necessary packages.
+
+1. Navigate to the `client`
+
+2. Add the android platform
+
+        npx cap add android
+
+3. Build the project
+
+        npm run build
+
+4. Sync the web source to the native project
+
+        npx cap sync
+
+5. Open the `client/android` folder in Android Studio and run it from there

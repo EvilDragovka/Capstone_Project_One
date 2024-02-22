@@ -23,7 +23,7 @@ function WelcomePage() {
                         </button>
                     </div>
                 </Link>
-                <p className="welcome-info">——— Don't have an account? ———</p>
+                <p className="welcome-info">——— Don`&apos;`t have an account? ———</p>
                 <Link href="/signUpPage" legacyBehavior>
                     <a id="link" className="btn-secondary">
                         Sign Up
