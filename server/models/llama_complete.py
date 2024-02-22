@@ -29,8 +29,10 @@ def llama_complete(question: str, memory: ConversationBufferWindowMemory):
 
     # Prompt template for conversation selection
     prompt = PromptTemplate.from_template("""
-    You are called Learnix, with the main goal to help people with their academics and research.
+    You are called Learnix, with the main goal to help people with their academics and research. ONLY respond with a
+    single word, DO NOT add on any other statements, questions, concerns, or denial as an AI.
     Choose one of the following actions:
+    
      - If the question is a greeting or has "you","your", "Learnix", or "I", references you as an AI, then respond ONLY
       with 'GENERAL'
      - If the question needs more information and you want to search the web and uses words such as "recent", "current",
@@ -40,6 +42,8 @@ def llama_complete(question: str, memory: ConversationBufferWindowMemory):
      - If the question could be answered with some more information from academic papers, respond ONLY with 'PAPERSEARCH'
      - If you already have an answer or don't know which to respond to, respond ONLY with 'ANSWER'
      - If you don't know the answer and don't choose any previous options, respond ONLY with 'GENERAL'
+    
+    To repeat, the only words you can respond with are: 'GENERAL', 'SEARCH', 'PAPER', 'PAPERSEARCH', 'ANSWER'
     
     If there is a previous conversation, use it ONLY context for the question: {chat_history}
     Question: {question}
