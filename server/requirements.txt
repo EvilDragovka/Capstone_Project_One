@@ -6,6 +6,7 @@ arxiv==2.1.0
 async-timeout==4.0.3
 attrs==23.2.0
 blinker==1.7.0
+bcrypt==4.1.2 
 cachetools==5.3.2
 certifi==2023.11.17
 cffi==1.16.0

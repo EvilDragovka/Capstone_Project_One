@@ -2,8 +2,8 @@ from datetime import date
 from sqlalchemy import create_engine, or_
 from sqlalchemy.orm import sessionmaker
 from config import Config
-from server.models.user import User
-from server.models.query import Query
+from models.user import User
+from models.query import Query
 from sqlalchemy.exc import SQLAlchemyError
 import re
 import bcrypt

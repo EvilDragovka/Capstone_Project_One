@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-import server.service.query as query_service
+import service.query as query_service
 
 
 query_bp = Blueprint('query_bp', __name__)
