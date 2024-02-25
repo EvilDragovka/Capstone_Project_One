@@ -28,9 +28,9 @@ Make sure the `venv` package is installed. Python should come with venv preinsta
 
         > .venv\Scripts\activate
 
-4. Now install flask:
+4. Now install the required modules. That includes Flask:
 
-        $ pip install flask
+        $ pip install -r requirements.tx
 
 5. Start the server with
 

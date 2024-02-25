@@ -4,7 +4,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from config import Config
-from server.models.query import Query
+from models.query import Query
 
 engine = create_engine(
     Config.CONNECTION_TO_DATABASE,
