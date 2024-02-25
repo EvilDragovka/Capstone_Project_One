@@ -1,7 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useRouter } from 'next/router';
 import Link from 'next/link';
 
+
+
 function WelcomePage() {
+    const router = useRouter();
+
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    const handleLogin = (e: any) => {
+        e.preventDefault();
+
+        console.log('Email:', email);
+        console.log('Password:', password);
+        router.push('/mainPage')
+    };
+
+    const handleSignUp = (e: any) => {
+        e.preventDefault();
+
+        router.push('/signUpPage')
+    }
     return (
         <div className="welcome-container"> {}
             <div className="welcome-content"> {}
@@ -16,16 +37,14 @@ function WelcomePage() {
                         <input type="password" id="password" name="password" className="form-input" />
                     </div>
                 </form>
-                <Link href="/" legacyBehavior>
-                    <div className="welcome-btn">
-                        <button type="submit" className="btn-primary">
+                <Link href="/mainPage" legacyBehavior>
+                    <a type="submit" className="btn-secondary" onClick={handleLogin}>                     
                             Log In
-                        </button>
-                    </div>
+                    </a>
                 </Link>
                 <p className="welcome-info">——— Don`&apos;`t have an account? ———</p>
                 <Link href="/signUpPage" legacyBehavior>
-                    <a id="link" className="btn-secondary">
+                    <a id="link" className="btn-secondary" onClick={handleSignUp}>
                         Sign Up
                     </a>
                 </Link>

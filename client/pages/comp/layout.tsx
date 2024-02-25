@@ -59,7 +59,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         //  redirecting to the welcomePage if the user is not logged in
         router.push('/welcomePage');
         // localStorage.setItem('loggedIn', 'false');
-        window.location.reload();
+        //window.location.reload();
     }
 
     // Search overlay behavior
