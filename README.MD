@@ -30,7 +30,7 @@ Make sure the `venv` package is installed. Python should come with venv preinsta
 
 4. Now install the required modules. That includes Flask:
 
-        $ pip install -r requirements.tx
+        $ pip install -r requirements.txt
 
 5. Start the server with
 

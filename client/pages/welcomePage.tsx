@@ -1,26 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-
+import axios from 'axios';
 
 
 function WelcomePage() {
     const router = useRouter();
 
+    const [login, setLogin] = useState({
+        email: "",
+        password: "",
+    });
+    
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     const handleLogin = (e: any) => {
-        e.preventDefault();
+        e.preventDefault(); 
 
-        console.log('Email:', email);
-        console.log('Password:', password);
+        let newLogin = setLogin({email, password})
+        
         router.push('/mainPage')
     };
 
     const handleSignUp = (e: any) => {
         e.preventDefault();
-
+        
         router.push('/signUpPage')
     }
     return (
