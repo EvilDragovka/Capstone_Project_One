@@ -1,21 +1,58 @@
-import React, { useState } from 'react';
+import React, { useState, Component, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import WelcomePage from './welcomePage';
+import axios from 'axios';
 
 function SignUpPage() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const route = useRouter()
     const [showPassword, setShowPassword] = useState(false);
+
+    const [data, setData] = useState({
+        username: "",
+        email: "",
+        password: ""
+    });
 
     const handlePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
 
+
+    const handleChange = (e: any) => {
+        const value = e.target.value;
+        setData({
+            ...data,
+            [e.target.name]: value
+        });
+    };
+    
     const handleSubmit = (e: any) => {
         e.preventDefault();
-
-        console.log('Email:', email);
-        console.log('Password:', password);
+        const userData = {
+            username: data.email,
+            email: data.email,
+            password: data.password
+        };
+        axios.post("http://127.0.0.1:5000/api/users/register", userData).then((response) => {
+            console.log(response.status, response.data.token);
+        })
+        .catch((error) => {
+            if (error.response) {
+                console.log(error.response);
+                console.log("server responded");
+            } else if (error.request) {
+                console.log("network error");
+            } else {
+                console.log(error)
+            }
+        });
+        route.push('/welcomePage')
     };
+
+
+        
+
 
     return (
         <div className="signup-container">
@@ -30,8 +67,8 @@ function SignUpPage() {
                             type="email"
                             id="email"
                             name="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            value={data.email}
+                            onChange={handleChange}
                             className="signup-input"
                         />
                     </div>
@@ -43,8 +80,8 @@ function SignUpPage() {
                             type={showPassword ? 'text' : 'password'}
                             id="password"
                             name="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            value={data.password}
+                            onChange={handleChange}
                             className="signup-input"
                         />
                         <button
@@ -55,11 +92,9 @@ function SignUpPage() {
                             {showPassword ? 'Hide' : 'Show'}
                         </button>
                     </div>
-                    <Link href="/" legacyBehavior>
                         <button type="submit" className="signup-button">
                             Sign Up
                         </button>
-                    </Link>
                 </form>
             </div>
         </div>
