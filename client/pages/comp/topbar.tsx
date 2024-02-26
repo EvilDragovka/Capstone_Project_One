@@ -7,9 +7,7 @@ interface TopBarProps {
 }
 
 // TODO: 
-//  - Implement search overlay
 //  - Replace placeholder text with actual logo
-//  - Replace menu and search text with icons   
 const TopBar: React.FC<TopBarProps> = ({onMenuClick, onSearchClick}) => {
     return (
       <nav>

@@ -6,6 +6,7 @@ import '@/styles/welcomePage.css';
 import '@/styles/signUpPage.css';
 import { useState } from "react";
 import type { AppProps } from "next/app";
+import Cookies from 'js-cookie';
 import WelcomePage from './welcomePage';
 import SignUpPage from './signUpPage';
 import { useRouter } from 'next/router';
@@ -14,8 +15,15 @@ import Layout from "./comp/layout";
 import SearchQuery from "./class/searchQuery";
 import ResultsPage from "./resultsPage";
 
+interface User {
+    email: string | undefined;
+}
+
 var searchHistory: SearchQuery[] = [];
 var searchQuery: SearchQuery | null = null;
+const currentUser: User = { 
+    email: Cookies.get('email')
+};
 
 export default function App({ Component, pageProps }: AppProps) {
     const router = useRouter();
@@ -23,13 +31,26 @@ export default function App({ Component, pageProps }: AppProps) {
     // Maybe we could use cookies for this? So that the client won't have to
     //  make requests every time the user enters the page, making things faster?
 
+    var goToWelcomeUpPage = currentUser.email === undefined ||
+        router.pathname === '/welcomePage';
+
+    // console.log(currentUser);
+
     // check the route and render the appropriate component
     if (router.pathname === '/signUpPage') {
-        return <SignUpPage />;
+        return (
+            <div className="App">
+                <SignUpPage />
+            </div>
+        );
     }
 
-    if (router.pathname === '/welcomePage') {
-        return <WelcomePage />;
+    if (goToWelcomeUpPage) {
+        return (
+            <div className="App">
+                <WelcomePage />
+            </div>
+        );
     }
 
     // TODO: Implement a way to load the last search query the user made
@@ -52,7 +73,6 @@ export default function App({ Component, pageProps }: AppProps) {
             <MainPage />
         </Layout>
     );
-
 }
 
 export function getSearchResult(): string | null {

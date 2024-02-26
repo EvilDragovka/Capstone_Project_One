@@ -64,6 +64,7 @@
 
 .welcome-btn {
     margin-top: 1rem;
+    align-self: center;
 }
 
 .btn-primary,

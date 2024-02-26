@@ -10,7 +10,6 @@ interface SidebarProps {
   onHomeClick: () => void;
 }
 
-// TODO: Make the search query buttons into components
 const SideBar: React.FC<SidebarProps> = ({ isOpen, onClose, onQueryClick, onHomeClick, onLogoutClick }) => {
     // This is so the buttons is sorted from up to down, latest to oldest
     var history = getSearchHistory().slice().reverse();
