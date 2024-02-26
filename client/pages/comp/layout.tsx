@@ -5,6 +5,7 @@ import SideBar from "./sidebar";
 import FullScreenSearch from "./fullscreenSearch";
 import SearchQuery from '../class/searchQuery';
 import { getSearchHistory, getSearchQuery, makeLatestSearchQuery, pushSearchHistory, setSearchQuery } from '../_app';
+import Cookies from 'js-cookie';
 
 interface LayoutProps {
     children: ReactNode;
@@ -57,9 +58,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     const sidebarLogout = () => {
         // TODO: Remove the router.push. The page should be reloaded with the layout
         //  redirecting to the welcomePage if the user is not logged in
-        router.push('/welcomePage');
+        // router.push('/welcomePage');
         // localStorage.setItem('loggedIn', 'false');
-        //window.location.reload();
+        // Cookies.remove('id');
+        // Cookies.remove('username');
+        Cookies.remove('email');
+        window.location.reload();
     }
 
     // Search overlay behavior
@@ -72,10 +76,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         setIsSearchOpen(false);
     };
 
-    const doSearch = (x: string) => {
+    const doSearch = (p: string) => {
         closeSearch();
 
-        var query = new SearchQuery(x, 
+        var query = new SearchQuery(p, 
             "Eligendi totam ipsam quo a eligendi quisquam at. In voluptatum incidunt saepe. Mollitia aspernatur eos aliquam consectetur molestiae. Dolores cupiditate neque a." +
             "Voluptatem molestiae aut aut fugiat. Nobis et et veniam eaque est. Vel quibusdam dicta et qui iure quis magni. Dolorum fuga commodi omnis distinctio. Quia vel delectus et voluptatem et sed aliquam. Ea dolore doloremque et architecto voluptatem." +
             "Harum sint ut qui sed omnis molestiae amet sed. Delectus et commodi veniam natus repudiandae in. Voluptatem velit beatae magni. Delectus unde qui tenetur tempora. Ea cupiditate culpa suscipit est in adipisci. Praesentium facere non alias quia." +
