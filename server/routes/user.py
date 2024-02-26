@@ -22,7 +22,7 @@ def get_by_id(user_id):
 @user_bp.route('/login', methods=['POST'])
 def login():
     data = request.json
-    success, message = user_service.login(data['identifier'], data['password'])
+    success, message = user_service.login(data['email'], data['password'])
     if success:
         return jsonify({'message': "success"}), 200
     else:
