@@ -12,13 +12,19 @@ import SignUpPage from './signUpPage';
 import { useRouter } from 'next/router';
 import MainPage from './mainPage';
 import Layout from "./comp/layout";
-import SearchQuery from "./class/searchQuery";
 import ResultsPage from "./resultsPage";
 
-interface User {
+export interface User {
     email: string | undefined;
     username: string | undefined;
     id: string | undefined;
+}
+
+export interface SearchQuery {
+    prompt: string;
+    result: string;
+    userId: string;
+    queryId: string;
 }
 
 var searchHistory: SearchQuery[] = [];
@@ -32,8 +38,11 @@ export const currentUser: User = {
 export default function App({ Component, pageProps }: AppProps) {
     const router = useRouter();
     // Load the most recent search query
-    // Maybe we could use cookies for this? So that the client won't have to
-    //  make requests every time the user enters the page, making things faster?
+    var history = Cookies.get('searchHistory');
+    if (history) {
+        searchHistory = JSON.parse(history);
+        searchQuery = searchHistory[searchHistory.length - 1];
+    }
 
     var goToWelcomeUpPage = currentUser.email === undefined ||
         currentUser.username === undefined ||
@@ -81,11 +90,11 @@ export default function App({ Component, pageProps }: AppProps) {
 }
 
 export function getSearchResult(): string | null {
-    return searchQuery ? searchQuery.getResult() : null;
+    return searchQuery ? searchQuery.result : null;
 }
 
 export function getSearchPrompt(): string | null {
-    return searchQuery ? searchQuery.getPrompt() : null;
+    return searchQuery ? searchQuery.prompt : null;
 }
 
 export function getSearchQuery(): SearchQuery | null {
@@ -102,6 +111,8 @@ export function pushSearchHistory(query: SearchQuery) {
     }
     searchHistory.push(query);
     searchQuery = query;
+
+    Cookies.set('searchHistory', JSON.stringify(searchHistory));
 }
 
 export function setSearchQuery(i: number) {
@@ -117,5 +128,6 @@ export function makeLatestSearchQuery(i: number) {
         var historyEnd = searchHistory.slice(i + 1, searchHistory.length);
         searchHistory = historyStart.concat(historyEnd);
         searchHistory.push(searchQuery);
+        Cookies.set('searchHistory', JSON.stringify(searchHistory));
     }
 }

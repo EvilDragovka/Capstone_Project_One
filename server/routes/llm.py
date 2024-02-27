@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-import server.service.llama_functions as llama
+import service.llama_functions as llama
 
 llama_bp = Blueprint('llama_bp', __name__)
 
