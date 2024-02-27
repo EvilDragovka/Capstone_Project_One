@@ -67,6 +67,11 @@ def prompt_template():
     )
     return prompt
 
+
+# Prompt Template
+# Used for basic conversations and for conversations
+# Adjust the content as needed to change personality of AI, do not change MessagesPlaceholder
+# or HumanMessagePromptTemplate
 def prompt_template_no_history():
     prompt = ChatPromptTemplate.from_messages(
         [
@@ -80,6 +85,7 @@ def prompt_template_no_history():
         ]
     )
     return prompt
+
 
 # Conversation with memory
 # Takes in memory_key and question, returns response
