@@ -39,10 +39,7 @@ def get_recent(user_id, count, offset):
     return queries
 
 
-def create(user_id, question):
-    # TODO add connectivity to Llama
-    # TODO acquire response from model
-    response = ""
+def create(user_id, question, response):
     session = Session()
     try:
         new_query = Query(user_id=user_id, question=question, response=response, date=date.today())
