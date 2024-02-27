@@ -8,6 +8,7 @@ import { getSearchHistory, getSearchQuery, makeLatestSearchQuery, pushSearchHist
 import Cookies from 'js-cookie';
 
 interface LayoutProps {
+    navigation: boolean
     children: ReactNode;
 }
 
@@ -15,7 +16,7 @@ const testQuery = new SearchQuery("What is love?", "Baby don't hurt me\n\
 Don't hurt me\n\
 No more");
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const Layout: React.FC<LayoutProps> = ({ navigation, children }) => {
     // LOGIC:
     //   - If no search query was made, just display the welcome page
     //   - Else, 
@@ -63,6 +64,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         // Cookies.remove('id');
         // Cookies.remove('username');
         Cookies.remove('email');
+        Cookies.remove('username');
+        Cookies.remove('id');
         window.location.reload();
     }
 
@@ -93,13 +96,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
     return (
         <div className="App">
-            <TopBar onMenuClick={toggleSidebar} onSearchClick={toggleSearch} />
-            <SideBar isOpen={isSidebarOpen} 
+            <TopBar showButtons={navigation} onMenuClick={toggleSidebar} onSearchClick={toggleSearch} />
+            {navigation && <SideBar isOpen={isSidebarOpen} 
                 onClose={sidebarClose} 
                 onQueryClick={(x: number) => sidebarSearchQuery(x)}
                 onHomeClick={sidebarHome} 
-                onLogoutClick={sidebarLogout}/>
-            <FullScreenSearch isOpen={isSearchOpen} onClose={closeSearch} onSearch={doSearch} />
+                onLogoutClick={sidebarLogout}/>}
+            {navigation && <FullScreenSearch isOpen={isSearchOpen} onClose={closeSearch} onSearch={doSearch} />}
             {children}
         </div>
     );

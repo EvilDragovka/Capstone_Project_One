@@ -22,11 +22,16 @@ def get_by_id(user_id):
 @user_bp.route('/login', methods=['POST'])
 def login():
     data = request.json
-    success, message = user_service.login(data['email'], data['password'])
+    success, user, message = user_service.login(data['email'], data['password'])
     if success:
-        return jsonify({'message': "success"}), 200
+        return jsonify({
+            'message': message,
+            'user': user.to_dict_no_password()
+        }), 200
     else:
-        return jsonify({'error': message}), 401
+        return jsonify({
+            'error': message
+        }), 401
 
 
 @user_bp.route('/<int:user_id>', methods=['DELETE'])

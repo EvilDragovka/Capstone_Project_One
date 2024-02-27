@@ -8,7 +8,7 @@ nav {
   z-index: 900;
 }
 
-nav button {
+nav button, nav p {
   padding: 15px 25px;
 }
 
@@ -16,6 +16,7 @@ nav div {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  vertical-align: middle;
 }
 
 nav button:hover {

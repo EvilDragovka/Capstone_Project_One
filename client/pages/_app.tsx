@@ -17,12 +17,16 @@ import ResultsPage from "./resultsPage";
 
 interface User {
     email: string | undefined;
+    username: string | undefined;
+    id: string | undefined;
 }
 
 var searchHistory: SearchQuery[] = [];
 var searchQuery: SearchQuery | null = null;
-const currentUser: User = { 
-    email: Cookies.get('email')
+export const currentUser: User = { 
+    email: Cookies.get('email'),
+    username: Cookies.get('username'),
+    id: Cookies.get('id')
 };
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -32,24 +36,25 @@ export default function App({ Component, pageProps }: AppProps) {
     //  make requests every time the user enters the page, making things faster?
 
     var goToWelcomeUpPage = currentUser.email === undefined ||
-        router.pathname === '/welcomePage';
+        currentUser.username === undefined ||
+        currentUser.id === undefined;
 
     // console.log(currentUser);
 
     // check the route and render the appropriate component
     if (router.pathname === '/signUpPage') {
         return (
-            <div className="App">
+            <Layout navigation={false}>
                 <SignUpPage />
-            </div>
+            </Layout>
         );
     }
 
     if (goToWelcomeUpPage) {
         return (
-            <div className="App">
+            <Layout navigation={false}>
                 <WelcomePage />
-            </div>
+            </Layout>
         );
     }
 
@@ -62,14 +67,14 @@ export default function App({ Component, pageProps }: AppProps) {
     if (router.pathname.indexOf('/resultsPage') != -1 && searchQuery) {
 
         return (
-            <Layout>
+            <Layout navigation={true}>
                 <ResultsPage />
             </Layout>
         );
     }
 
     return (
-        <Layout>
+        <Layout navigation={true}>
             <MainPage />
         </Layout>
     );
