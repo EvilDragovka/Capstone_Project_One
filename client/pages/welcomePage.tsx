@@ -4,25 +4,6 @@ import Cookies from 'js-cookie';
 import { useRouter } from 'next/router';
 
 async function loginUser(credentials: {email: string, password: string} ) {
-<<<<<<< HEAD
-    try {
-        const url = "http://localhost:5000/api/users/login";
-        // const url = "";
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(credentials),
-        });
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        console.log('User logged in:', data);
-        return true;
-    } catch (error) {
-        console.error('Error:', error);
-        return false;
-=======
     const response = await fetch('http://localhost:5000/api/users/login', {
         method: 'POST',
         headers: {"Content-Type": "application/json"},
@@ -31,7 +12,6 @@ async function loginUser(credentials: {email: string, password: string} ) {
     if (response.status === 401) {
         console.log('Invalid credentials');
         return response.status;
->>>>>>> b34841bd7661fdb84a9cbb575cee3c0bbbece541
     }
     if (!response.ok) {
         console.log('Server error');
@@ -64,13 +44,6 @@ function WelcomePage() {
 
     const onSubmitClick = async (event: any) =>  {
         event.preventDefault();
-<<<<<<< HEAD
-        if (await loginUser(formData)) {
-            Cookies.set('email', formData.email);
-            Cookies.set('timestamp', Date.now().toString());
-            //window.location.reload();
-            router.push('/mainPage')
-=======
         if (formData.email === '' || formData.password === '') {
             setErrorMessage('Please fill in all fields');
             return;
@@ -84,7 +57,6 @@ function WelcomePage() {
             setErrorMessage('Invalid credentials');
         } else {
             setErrorMessage(response.toString());
->>>>>>> b34841bd7661fdb84a9cbb575cee3c0bbbece541
         }
     }
 
