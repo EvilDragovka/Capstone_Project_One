@@ -1,5 +1,6 @@
+'use client'
 import React from 'react';
-import { getSearchHistory } from '../_app';
+import { searchHistory } from '../_app';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -11,7 +12,7 @@ interface SidebarProps {
 
 const SideBar: React.FC<SidebarProps> = ({ isOpen, onClose, onQueryClick, onHomeClick, onLogoutClick }) => {
     // This is so the buttons is sorted from up to down, latest to oldest
-    var history = getSearchHistory().slice().reverse();
+    var history = searchHistory.slice().reverse();
     var historyInd: number[] = [];
     history.forEach((query, index) => {
         historyInd.push(index);

@@ -1,8 +1,11 @@
+'use client'
 import React, { useState, Component, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import WelcomePage from './welcomePage';
 import axios from 'axios';
+import Cookies from 'js-cookie';
+import { backendUrl } from './_app';
 
 function SignUpPage() {
     const route = useRouter()
@@ -29,14 +32,12 @@ function SignUpPage() {
     
     const handleSubmit = (e: any) => {
         e.preventDefault();
-        const url = "http://127.0.0.1:5000/api/users/register";
-        //const url = "change this string for other url";
         const userData = {
             username: data.email,
             email: data.email,
             password: data.password
         };
-        axios.post(url, userData).then((response) => {
+        axios.post(backendUrl + "api/users/register", userData).then((response) => {
             console.log(response.status, response.data.token);
         })
         .catch((error) => {
@@ -49,12 +50,11 @@ function SignUpPage() {
                 console.log(error)
             }
         });
-        route.push('/welcomePage')
+        Cookies.set('email', data.email);
+        Cookies.set('username', data.username);
+        Cookies.set('id', data.email);
+        route.push('/')
     };
-
-
-        
-
 
     return (
         <div className="signup-container">

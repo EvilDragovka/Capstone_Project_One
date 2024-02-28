@@ -22,26 +22,30 @@ export interface User {
 
 export interface SearchQuery {
     prompt: string;
-    result: string;
+    result: string | null;
     userId: string;
     queryId: string;
 }
 
-var searchHistory: SearchQuery[] = [];
-var searchQuery: SearchQuery | null = null;
+export const backendUrl = 'http://localhost:5000/';
+export var searchHistory: SearchQuery[] = [];
+export var currentSearchQuery: SearchQuery | null = null;
+export var currentPrompt: string | null = null;
 export const currentUser: User = { 
     email: Cookies.get('email'),
     username: Cookies.get('username'),
     id: Cookies.get('id')
 };
+export var searching = false;
+var loadedHistory = false;
 
 export default function App({ Component, pageProps }: AppProps) {
     const router = useRouter();
     // Load the most recent search query
-    var history = Cookies.get('searchHistory');
-    if (history) {
-        searchHistory = JSON.parse(history);
-        searchQuery = searchHistory[searchHistory.length - 1];
+    if (!loadedHistory) {
+        var history = Cookies.get('searchHistory');
+        searchHistory = JSON.parse(history || '[]');
+        loadedHistory = true;
     }
 
     var goToWelcomeUpPage = currentUser.email === undefined ||
@@ -60,11 +64,11 @@ export default function App({ Component, pageProps }: AppProps) {
     }
 
     if (goToWelcomeUpPage) {
-        return (
-            <Layout navigation={false}>
-                <WelcomePage />
-            </Layout>
-        );
+    //     return (
+    //         <Layout navigation={false}>
+    //             <WelcomePage />
+    //         </Layout>
+    //     );
     }
 
     // TODO: Implement a way to load the last search query the user made
@@ -73,7 +77,7 @@ export default function App({ Component, pageProps }: AppProps) {
     //  - e.g. /resultsPage?queryID=123
     //  - Of course, each query should be associated with a user ID
     //  - So no one can access other people's queries
-    if (router.pathname.indexOf('/resultsPage') != -1 && searchQuery) {
+    if (router.pathname.indexOf('/resultsPage') != -1 && (currentPrompt || currentSearchQuery)) {
 
         return (
             <Layout navigation={true}>
@@ -89,20 +93,37 @@ export default function App({ Component, pageProps }: AppProps) {
     );
 }
 
-export function getSearchResult(): string | null {
-    return searchQuery ? searchQuery.result : null;
+export async function postToLlm(p: string) {
+    searching = true;
+    let data = {
+        question: p
+    };
+    console.log(data);
+    const response = await fetch(backendUrl + 'api/llama/conversation', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+        searching = false;
+        throw new Error('Network response was not ok');
+    }
+    const json = await response.json();
+    console.log(json);
+    
+    searching = false;
+    return json.response;
 }
 
-export function getSearchPrompt(): string | null {
-    return searchQuery ? searchQuery.prompt : null;
-}
+export async function initializeSearching(prompt: string) {
+    currentPrompt = prompt;
 
-export function getSearchQuery(): SearchQuery | null {
-    return searchQuery;
-}
-
-export function getSearchHistory(): SearchQuery[] {
-    return searchHistory;
+    currentSearchQuery = null;
+    const response = await postToLlm(currentPrompt as string).catch((error) => {
+        console.error('Error:', error);
+        return "I'm sorry, something went wrong. Please try again.";
+    })
+    return response;
 }
 
 export function pushSearchHistory(query: SearchQuery) {
@@ -110,24 +131,29 @@ export function pushSearchHistory(query: SearchQuery) {
         searchHistory.shift();
     }
     searchHistory.push(query);
-    searchQuery = query;
+    currentSearchQuery = query;
+    currentPrompt = null;
+    console.log(query);
 
     Cookies.set('searchHistory', JSON.stringify(searchHistory));
 }
 
 export function setSearchQuery(i: number) {
     if (i >= 0 && i < searchHistory.length) {
-        searchQuery = searchHistory[i];
+        currentSearchQuery = searchHistory[i];
+        currentPrompt = currentSearchQuery.result;
     }
 }
 
 export function makeLatestSearchQuery(i: number) {
     if (i >= 0 && i < searchHistory.length) {
-        searchQuery = searchHistory[i];
+        currentSearchQuery = searchHistory[i];
+        currentPrompt = null;
         var historyStart = searchHistory.slice(0, i);
         var historyEnd = searchHistory.slice(i + 1, searchHistory.length);
         searchHistory = historyStart.concat(historyEnd);
-        searchHistory.push(searchQuery);
+        searchHistory.push(currentSearchQuery);
+        console.log(currentSearchQuery);
         Cookies.set('searchHistory', JSON.stringify(searchHistory));
     }
 }

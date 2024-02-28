@@ -1,35 +1,15 @@
+'use client'
 import { useRouter } from 'next/router';
 import { ReactNode, useEffect, useState } from 'react';
 import TopBar from "./topbar";
 import SideBar from "./sidebar";
 import FullScreenSearch from "./fullscreenSearch";
-import { SearchQuery, getSearchHistory, getSearchQuery, makeLatestSearchQuery, pushSearchHistory, setSearchQuery } from '../_app';
+import { SearchQuery, initializeSearching, makeLatestSearchQuery, pushSearchHistory } from '../_app';
 import Cookies from 'js-cookie';
 
 interface LayoutProps {
     navigation: boolean
     children: ReactNode;
-}
-
-async function postToLlm(p: string) {
-    try {
-        let data = {
-            question: p
-        };
-        const response = await fetch('http://localhost:5000/api/llama/conversation', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(data),
-        });
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        const json = await response.json();
-        console.log(json);
-        return json.response;
-    } catch (error) {
-        return 'There has been a problem with the search operation:' + error;
-    }
 }
 
 const Layout: React.FC<LayoutProps> = ({ navigation, children }) => {
@@ -42,15 +22,20 @@ const Layout: React.FC<LayoutProps> = ({ navigation, children }) => {
 
     // TODO: Redirect to the welcomePage if the user is not logged in
     const router = useRouter();
-     //useEffect(() => {
-     //    const isLoggedIn = localStorage.getItem('loggedIn') === 'true'; // Your authentication logic here
+    // useEffect(() => {
+    //     const isLoggedIn = currentUser.email === undefined ||
+    //     currentUser.username === undefined ||
+    //     currentUser.id === undefined;; // Your authentication logic here
     //     if (!isLoggedIn) {
-    //         router.push('/welcomePage');
+    //         // router.push('/welcomePage');
+    //         // window.location.reload();
     //     }
-   //  }, []);
+    // }, []);
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [searchPrompt, setSearchPrompt] = useState('');
+    const [searchResult, setSearchResult] = useState('Let me think about that...');
 
     // Sidebar overlay behavior
     const toggleSidebar = () => {
@@ -82,7 +67,9 @@ const Layout: React.FC<LayoutProps> = ({ navigation, children }) => {
         Cookies.remove('email');
         Cookies.remove('username');
         Cookies.remove('id');
+        Cookies.remove('timestamp');
         window.location.reload();
+        // router.push('/welcomePage');
     }
 
     // Search overlay behavior
@@ -97,17 +84,18 @@ const Layout: React.FC<LayoutProps> = ({ navigation, children }) => {
 
     const doSearch = async (p: string) => {
         closeSearch();
+        router.push('/resultsPage');
+        setSearchPrompt(p);
+        var response = await initializeSearching(p);
 
-        const response = await postToLlm(p);
-        var query: SearchQuery = { 
-            prompt: p, 
+        var query: SearchQuery = {
+            prompt: p,
             result: response,
             userId: Cookies.get('id') || '',
-            queryId: ''
+            queryId: Date.now().toString()
         };
         pushSearchHistory(query);
-        // searchStateFunction(SearchStatus.READY);
-        router.push('/resultsPage');
+        setSearchResult(response);
     }
 
     return (

@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/router';
+import { backendUrl } from './_app';
 
 async function loginUser(credentials: {email: string, password: string} ) {
-    const response = await fetch('http://localhost:5000/api/users/login', {
+    const response = await fetch(backendUrl + 'api/users/login', {
         method: 'POST',
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(credentials),
@@ -52,6 +53,7 @@ function WelcomePage() {
         let response = await loginUser(formData);
         console.log(response);
         if (response == 200) {
+            router.push('/');
             window.location.reload();
         } else if (response == 401) {
             setErrorMessage('Invalid credentials');
