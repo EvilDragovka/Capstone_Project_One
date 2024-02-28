@@ -5,7 +5,9 @@ import { useRouter } from 'next/router';
 
 async function loginUser(credentials: {email: string, password: string} ) {
     try {
-        const response = await fetch('http://localhost:5000/api/users/login', {
+        const url = "http://localhost:5000/api/users/login";
+        // const url = "";
+        const response = await fetch(url, {
             method: 'POST',
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(credentials),
@@ -42,7 +44,8 @@ function WelcomePage() {
         if (await loginUser(formData)) {
             Cookies.set('email', formData.email);
             Cookies.set('timestamp', Date.now().toString());
-            window.location.reload();
+            //window.location.reload();
+            router.push('/mainPage')
         }
     }
 

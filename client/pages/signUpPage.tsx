@@ -29,12 +29,14 @@ function SignUpPage() {
     
     const handleSubmit = (e: any) => {
         e.preventDefault();
+        const url = "http://127.0.0.1:5000/api/users/register";
+        //const url = "change this string for other url";
         const userData = {
             username: data.email,
             email: data.email,
             password: data.password
         };
-        axios.post("http://127.0.0.1:5000/api/users/register", userData).then((response) => {
+        axios.post(url, userData).then((response) => {
             console.log(response.status, response.data.token);
         })
         .catch((error) => {
