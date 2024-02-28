@@ -3,19 +3,36 @@ import { ReactNode, useEffect, useState } from 'react';
 import TopBar from "./topbar";
 import SideBar from "./sidebar";
 import FullScreenSearch from "./fullscreenSearch";
-import SearchQuery from '../class/searchQuery';
-import { getSearchHistory, getSearchQuery, makeLatestSearchQuery, pushSearchHistory, setSearchQuery } from '../_app';
+import { SearchQuery, getSearchHistory, getSearchQuery, makeLatestSearchQuery, pushSearchHistory, setSearchQuery } from '../_app';
 import Cookies from 'js-cookie';
 
 interface LayoutProps {
+    navigation: boolean
     children: ReactNode;
 }
 
-const testQuery = new SearchQuery("What is love?", "Baby don't hurt me\n\
-Don't hurt me\n\
-No more");
+async function postToLlm(p: string) {
+    try {
+        let data = {
+            question: p
+        };
+        const response = await fetch('http://localhost:5000/api/llama/conversation', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data),
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const json = await response.json();
+        console.log(json);
+        return json.response;
+    } catch (error) {
+        return 'There has been a problem with the search operation:' + error;
+    }
+}
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const Layout: React.FC<LayoutProps> = ({ navigation, children }) => {
     // LOGIC:
     //   - If no search query was made, just display the welcome page
     //   - Else, 
@@ -63,6 +80,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         // Cookies.remove('id');
         // Cookies.remove('username');
         Cookies.remove('email');
+        Cookies.remove('username');
+        Cookies.remove('id');
         window.location.reload();
     }
 
@@ -76,16 +95,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         setIsSearchOpen(false);
     };
 
-    const doSearch = (p: string) => {
+    const doSearch = async (p: string) => {
         closeSearch();
 
-        var query = new SearchQuery(p, 
-            "Eligendi totam ipsam quo a eligendi quisquam at. In voluptatum incidunt saepe. Mollitia aspernatur eos aliquam consectetur molestiae. Dolores cupiditate neque a." +
-            "Voluptatem molestiae aut aut fugiat. Nobis et et veniam eaque est. Vel quibusdam dicta et qui iure quis magni. Dolorum fuga commodi omnis distinctio. Quia vel delectus et voluptatem et sed aliquam. Ea dolore doloremque et architecto voluptatem." +
-            "Harum sint ut qui sed omnis molestiae amet sed. Delectus et commodi veniam natus repudiandae in. Voluptatem velit beatae magni. Delectus unde qui tenetur tempora. Ea cupiditate culpa suscipit est in adipisci. Praesentium facere non alias quia." +
-            "Repudiandae sapiente dolorum cum perferendis laborum consequuntur nihil et. Est assumenda unde et aut ut. Et dolore ut omnis et aliquam aliquid. Dolor ratione rerum quisquam tempora ut illo." +
-            "Pariatur fugit culpa placeat culpa. Velit fugiat eaque ut eum. Et quia est consequatur hic. Unde consequatur possimus culpa voluptatibus voluptas unde ab beatae. Ipsum est qui similique iure vel et quos molestiae. Iusto non a perspiciatis occaecati corporis ad laborum."
-        );
+        const response = await postToLlm(p);
+        var query: SearchQuery = { 
+            prompt: p, 
+            result: response,
+            userId: Cookies.get('id') || '',
+            queryId: ''
+        };
         pushSearchHistory(query);
         // searchStateFunction(SearchStatus.READY);
         router.push('/resultsPage');
@@ -93,13 +112,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
     return (
         <div className="App">
-            <TopBar onMenuClick={toggleSidebar} onSearchClick={toggleSearch} />
-            <SideBar isOpen={isSidebarOpen} 
+            <TopBar showButtons={navigation} onMenuClick={toggleSidebar} onSearchClick={toggleSearch} />
+            {navigation && <SideBar isOpen={isSidebarOpen} 
                 onClose={sidebarClose} 
                 onQueryClick={(x: number) => sidebarSearchQuery(x)}
                 onHomeClick={sidebarHome} 
-                onLogoutClick={sidebarLogout}/>
-            <FullScreenSearch isOpen={isSearchOpen} onClose={closeSearch} onSearch={doSearch} />
+                onLogoutClick={sidebarLogout}/>}
+            {navigation && <FullScreenSearch isOpen={isSearchOpen} onClose={closeSearch} onSearch={doSearch} />}
             {children}
         </div>
     );

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import SearchQuery from '../class/searchQuery';
 
 interface FullScreenSearchProps {
   isOpen: boolean;

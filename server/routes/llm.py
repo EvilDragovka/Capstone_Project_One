@@ -32,7 +32,7 @@ def conversation():
 # Conversation with memory, use for conversations with memory
 # Expects JSON with memory_key (ID for user chat) and question
 # Returns JSON with response (Output from llm)
-@llama_bp.route('/conversation_with_memory', methods=['POST'])
+@llama_bp.route('/memory_and_conv', methods=['POST'])
 def conversation_with_memory():
     data = request.json
     memory_key = data['memory_key']

@@ -68,6 +68,25 @@ def prompt_template():
     return prompt
 
 
+# Prompt Template
+# Used for basic conversations and for conversations
+# Adjust the content as needed to change personality of AI, do not change MessagesPlaceholder
+# or HumanMessagePromptTemplate
+def prompt_template_no_history():
+    prompt = ChatPromptTemplate.from_messages(
+        [
+            SystemMessage(
+                content="""You are Learnix, with the main goal to help people with their academics and research.\n
+                        If there was a previous conversation, here is the history: {chat_history}"""
+            ),
+            HumanMessagePromptTemplate.from_template(
+                "{user_input}"
+            ),
+        ]
+    )
+    return prompt
+
+
 # Conversation with memory
 # Takes in memory_key and question, returns response
 # Uses LLMChain to generate the response, keeps the entry and answer in memory (volatile)
@@ -86,7 +105,7 @@ def conversation_with_memory(memory_key: str, question: str):
 # Essentially the same as talking directly to llama2-70bchat
 def conversation(question: str):
     llama = llm()
-    template = prompt_template()
+    template = prompt_template_no_history()
     chat = LLMChain(llm=llama, prompt=template, verbose=False)
     response = chat.predict(user_input=question)
     return response

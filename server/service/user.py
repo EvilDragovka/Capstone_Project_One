@@ -49,15 +49,15 @@ def login(identifier, password):
     user = session.query(User).filter(or_(User.username == identifier, User.email == identifier)).first()
     if not user:
         session.close()
-        return False, "Invalid username or password."
+        return False, None, "Invalid username or password."
 
     # Verify the password
     if bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
         session.close()
-        return True, "Login successful."
+        return True, user, "Login successful."
     else:
         session.close()
-        return False, "Invalid username or password."
+        return False, None, "Invalid username or password."
 
 
 def register(username, email, password):

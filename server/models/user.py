@@ -26,3 +26,10 @@ class User(Base):
             "email": self.email,
             "password": self.password
         }
+
+    def to_dict_no_password(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "email": self.email
+        }

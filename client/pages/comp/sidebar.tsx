@@ -1,5 +1,4 @@
 import React from 'react';
-import SearchQuery from '../class/searchQuery';
 import { getSearchHistory } from '../_app';
 
 interface SidebarProps {
@@ -20,7 +19,7 @@ const SideBar: React.FC<SidebarProps> = ({ isOpen, onClose, onQueryClick, onHome
     historyInd = historyInd.slice().reverse();
     var dom: JSX.Element[] = [];
     history.forEach((query, index) => {
-        dom.push(<button className="search-query-btn" key={historyInd[index]} onClick={() => onQueryClick(historyInd[index])}><i className="fi fi-br-search"></i><text>{query.getPrompt()}</text></button>);
+        dom.push(<button className="search-query-btn" key={historyInd[index]} onClick={() => onQueryClick(historyInd[index])}><i className="fi fi-br-search"></i><text>{query.prompt}</text></button>);
     });
 
     return (

@@ -30,7 +30,7 @@ def llama_complete(question: str, memory: ConversationBufferWindowMemory):
     # Prompt template for conversation selection
     prompt = PromptTemplate.from_template("""
     You are called Learnix, with the main goal to help people with their academics and research. ONLY respond with a
-    single word, DO NOT add on any other statements, questions, concerns, or denial as an AI.
+    single word, DO NOT add on any other statements, questions, or concerns.
     Choose one of the following actions:
     
      - If the question is a greeting or has "you","your", "Learnix", or "I", references you as an AI, then respond ONLY
