@@ -30,45 +30,89 @@ export interface SearchQuery {
 export const backendUrl = 'http://localhost:5000/';
 export var searchHistory: SearchQuery[] = [];
 export var currentSearchQuery: SearchQuery | null = null;
-export var currentPrompt: string | null = null;
 export const currentUser: User = { 
     email: Cookies.get('email'),
     username: Cookies.get('username'),
     id: Cookies.get('id')
 };
 export var searching = false;
-var loadedHistory = false;
 
 export default function App({ Component, pageProps }: AppProps) {
     const router = useRouter();
+
+    // These are for the results page
+    const [prompt, setDisplayedPrompt] = useState('');
+    const [result, setDisplayedResult] = useState('');
+
     // Load the most recent search query
-    if (!loadedHistory) {
+    if (!searchHistory.length) {
         var history = Cookies.get('searchHistory');
         searchHistory = JSON.parse(history || '[]');
-        loadedHistory = true;
     }
 
+    // Check if the user is logged in
     var goToWelcomeUpPage = currentUser.email === undefined ||
         currentUser.username === undefined ||
         currentUser.id === undefined;
 
-    // console.log(currentUser);
+    // These two functions are for the results page
+    //   Well, they're passed to the layout, but they're to display the results
+    //   It was the best code design I could think of
 
-    // check the route and render the appropriate component
+    // Call this if there's a prompt but no current search query made
+    const fetchResults = async (p: string) => {
+        searching = true;
+        // Set the prompt and the loading message
+        setDisplayedPrompt(p);
+        setDisplayedResult('');
+
+        // Fetch the results from the backend
+        console.log('Searching...');
+        const response = await postToLlm(p).catch((error) => {
+            console.error('Error:', error);
+            searching = false;
+            setDisplayedResult("I'm sorry, something went wrong. Please try again.");
+        })
+        console.log('Finished search.');
+            
+        // Push the search query to the search history
+        var query: SearchQuery = {
+            prompt: p,
+            result: response,
+            userId: Cookies.get('id') || '',
+            queryId: Date.now().toString()
+        };
+        pushSearchHistory(query);
+        setDisplayedResult(response);
+        searching = false;
+    }
+
+    // Call this to show the results of a previous search query
+    const showResults = (i: number) => {
+        var query: SearchQuery | null = makeLatestSearchQuery(i);
+        if (query) {
+            setDisplayedPrompt(query.prompt);
+            setDisplayedResult(query.result || '');
+        }
+    }
+
+    /* =================== ROUTERS =================== */
+    // Sign up page
     if (router.pathname === '/signUpPage') {
         return (
-            <Layout navigation={false}>
+            <Layout navigation={true} showResults={(i: number) => showResults(i)} fetchResults={(p: string) => fetchResults(p)}>
                 <SignUpPage />
             </Layout>
         );
     }
 
+    // Welcome page
     if (goToWelcomeUpPage) {
-    //     return (
-    //         <Layout navigation={false}>
-    //             <WelcomePage />
-    //         </Layout>
-    //     );
+        return (
+            <Layout navigation={true} showResults={(i: number) => showResults(i)} fetchResults={(p: string) => fetchResults(p)}>
+                <WelcomePage />
+            </Layout>
+        );
     }
 
     // TODO: Implement a way to load the last search query the user made
@@ -77,83 +121,64 @@ export default function App({ Component, pageProps }: AppProps) {
     //  - e.g. /resultsPage?queryID=123
     //  - Of course, each query should be associated with a user ID
     //  - So no one can access other people's queries
-    if (router.pathname.indexOf('/resultsPage') != -1 && (currentPrompt || currentSearchQuery)) {
-
+    if (router.pathname.indexOf('/resultsPage') != -1 && (currentSearchQuery)) {
+        // const prompt = router.pathname.split('?prompt=')[1];        
         return (
-            <Layout navigation={true}>
-                <ResultsPage />
+            <Layout navigation={true} showResults={(i: number) => showResults(i)} fetchResults={(p: string) => fetchResults(p)}>
+                <ResultsPage prompt={prompt} result={result}/>
             </Layout>
         );
     }
 
     return (
-        <Layout navigation={true}>
+        <Layout navigation={true} showResults={(i: number) => showResults(i)} fetchResults={(p: string) => fetchResults(p)}>
             <MainPage />
         </Layout>
     );
 }
 
+// Sends a prompt to the LLM and returns the response
 export async function postToLlm(p: string) {
-    searching = true;
     let data = {
         question: p
     };
-    console.log(data);
     const response = await fetch(backendUrl + 'api/llama/conversation', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(data),
     });
     if (!response.ok) {
-        searching = false;
         throw new Error('Network response was not ok');
     }
     const json = await response.json();
-    console.log(json);
-    
-    searching = false;
     return json.response;
 }
 
-export async function initializeSearching(prompt: string) {
-    currentPrompt = prompt;
-
-    currentSearchQuery = null;
-    const response = await postToLlm(currentPrompt as string).catch((error) => {
-        console.error('Error:', error);
-        return "I'm sorry, something went wrong. Please try again.";
-    })
-    return response;
-}
-
+// Pushes a search query to the search history
+//   Oldest search query gets removed if the history is full
 export function pushSearchHistory(query: SearchQuery) {
     if (searchHistory.length >= 5) {
         searchHistory.shift();
     }
     searchHistory.push(query);
     currentSearchQuery = query;
-    currentPrompt = null;
     console.log(query);
 
     Cookies.set('searchHistory', JSON.stringify(searchHistory));
 }
 
-export function setSearchQuery(i: number) {
-    if (i >= 0 && i < searchHistory.length) {
-        currentSearchQuery = searchHistory[i];
-        currentPrompt = currentSearchQuery.result;
-    }
-}
-
+// Brings the indexed query to the top of the search history
 export function makeLatestSearchQuery(i: number) {
     if (i >= 0 && i < searchHistory.length) {
         currentSearchQuery = searchHistory[i];
-        currentPrompt = null;
         var historyStart = searchHistory.slice(0, i);
         var historyEnd = searchHistory.slice(i + 1, searchHistory.length);
         searchHistory = historyStart.concat(historyEnd);
         searchHistory.push(currentSearchQuery);
         console.log(currentSearchQuery);
         Cookies.set('searchHistory', JSON.stringify(searchHistory));
+        return currentSearchQuery;
+    } else {
+        return null;
     }
 }

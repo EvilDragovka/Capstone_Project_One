@@ -4,38 +4,31 @@ import { ReactNode, useEffect, useState } from 'react';
 import TopBar from "./topbar";
 import SideBar from "./sidebar";
 import FullScreenSearch from "./fullscreenSearch";
-import { SearchQuery, initializeSearching, makeLatestSearchQuery, pushSearchHistory } from '../_app';
 import Cookies from 'js-cookie';
 
 interface LayoutProps {
     navigation: boolean
     children: ReactNode;
+    showResults: (i: number) => void;
+    fetchResults: (p: string) => void;
 }
 
-const Layout: React.FC<LayoutProps> = ({ navigation, children }) => {
+// The layout of the page
+//   navigation: whether to show the topbar and sidebar
+//   children: the content of the page
+//   showResults: function called when clicking on a sidebar search query
+//   fetchResults: function to call when the user makes a search
+const Layout: React.FC<LayoutProps> = ({ navigation, children, showResults, fetchResults }) => {
     // LOGIC:
     //   - If no search query was made, just display the welcome page
     //   - Else, 
     //      - If the app is currently waiting for the search results, display the prompt and the loading spinner below it
     //      - If the search results are ready, display the search results
-    //      - If the app is loading an old search query, display a loading screen
 
-    // TODO: Redirect to the welcomePage if the user is not logged in
     const router = useRouter();
-    // useEffect(() => {
-    //     const isLoggedIn = currentUser.email === undefined ||
-    //     currentUser.username === undefined ||
-    //     currentUser.id === undefined;; // Your authentication logic here
-    //     if (!isLoggedIn) {
-    //         // router.push('/welcomePage');
-    //         // window.location.reload();
-    //     }
-    // }, []);
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
-    const [searchPrompt, setSearchPrompt] = useState('');
-    const [searchResult, setSearchResult] = useState('Let me think about that...');
 
     // Sidebar overlay behavior
     const toggleSidebar = () => {
@@ -47,7 +40,7 @@ const Layout: React.FC<LayoutProps> = ({ navigation, children }) => {
     };
 
     const sidebarSearchQuery = (x: number) => {
-        makeLatestSearchQuery(x);
+        showResults(x);
         sidebarClose();
         router.push('/resultsPage');
     }
@@ -78,24 +71,13 @@ const Layout: React.FC<LayoutProps> = ({ navigation, children }) => {
     };
 
     const closeSearch = () => {
-        // TODO: Clear the search prompt textarea upon closing the search overlay
         setIsSearchOpen(false);
     };
 
-    const doSearch = async (p: string) => {
+    const doSearch = (p: string) => {
         closeSearch();
+        fetchResults(p);
         router.push('/resultsPage');
-        setSearchPrompt(p);
-        var response = await initializeSearching(p);
-
-        var query: SearchQuery = {
-            prompt: p,
-            result: response,
-            userId: Cookies.get('id') || '',
-            queryId: Date.now().toString()
-        };
-        pushSearchHistory(query);
-        setSearchResult(response);
     }
 
     return (

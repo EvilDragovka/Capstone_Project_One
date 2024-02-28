@@ -18,6 +18,8 @@ const SideBar: React.FC<SidebarProps> = ({ isOpen, onClose, onQueryClick, onHome
         historyInd.push(index);
     });
     historyInd = historyInd.slice().reverse();
+
+    // Set each button to a number. That number indexes the search history
     var dom: JSX.Element[] = [];
     history.forEach((query, index) => {
         dom.push(<button className="search-query-btn" key={historyInd[index]} onClick={() => onQueryClick(historyInd[index])}><i className="fi fi-br-search"></i><text>{query.prompt}</text></button>);

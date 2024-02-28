@@ -21,10 +21,15 @@ const FullScreenSearch: React.FC<FullScreenSearchProps> = ({ isOpen, onClose, on
         setTextareaValue('');
     }
 
+    const handleClose = () => {
+        setTextareaValue('');
+        onClose();
+    }
+
     return (
         <div className={`full-screen-search ${isOpen ? 'open' : ''}`}>
             <div className="search-topbar">
-                <button id="close-btn" onClick={onClose}>
+                <button id="close-btn" onClick={handleClose}>
                     <i className="fi fi-br-cross"></i>
                 </button>
                 <button id="search-btn" onClick={handleSearch}>
