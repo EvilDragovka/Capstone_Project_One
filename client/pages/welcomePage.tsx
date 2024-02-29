@@ -34,7 +34,9 @@ function WelcomePage() {
         password: ''
     });
     const [errorMessage, setErrorMessage] = useState('');
-    
+    const [title, setTitle] = useState('Welcome!');
+    const [inactive, setInactive] = useState(false);
+
     const handleChange = (event: any) => {
         const { name, value } = event.target;
         setFormData(prevState => ({
@@ -50,6 +52,9 @@ function WelcomePage() {
             return;
         }
 
+        setTitle('Logging in...');
+        setErrorMessage('');
+        setInactive(true);
         let response = await loginUser(formData);
         console.log(response);
         if (response == 200) {
@@ -60,12 +65,14 @@ function WelcomePage() {
         } else {
             setErrorMessage(response.toString());
         }
+        setTitle('Welcome!');
+        setInactive(false);
     }
 
     return (
         <div className="welcome-container">
             <div className="welcome-content">
-                <h1 className="welcome-title">Welcome!</h1>
+                <h1 className="welcome-title">{title}</h1>
                 <p>{errorMessage}</p>
                 <form className="welcome-form" onSubmit={onSubmitClick}>
                     <div className="form-field">
@@ -77,7 +84,7 @@ function WelcomePage() {
                         <input type="password" id="password" name="password" className="form-input"  value={formData.password} onChange={handleChange}/>
                     </div>
                     <div className="welcome-btn">
-                        <button type="submit" className="btn-primary">
+                        <button disabled={inactive} type="submit" className="btn-primary">
                             Log In
                         </button>
                     </div>
