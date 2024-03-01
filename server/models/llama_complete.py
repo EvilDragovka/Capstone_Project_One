@@ -263,17 +263,13 @@ def llama_complete(question: str, memory: ConversationBufferWindowMemory, debug:
                 raise ValueError
         # Means that the AI couldn't make a decision from first chain
         except ValueError:
-            return {"input": output.get("input"), "output":  """Learnix has encountered an error in the routing logic. 
-Please try again. If the problem persists, please try another question or notify the developers."""}
+            return {"input": output.get("input"), "output":  """Learnix has encountered an error in the routing logic. Please try again. If the problem persists, please try another question or notify the developers."""}
         # Means that the AI took too long to respond
         except TimeoutError:
-            return {"input": output.get("input"), "output": """The response took too long to generate, please try again.
- If the problem persists, please try another question or notify the developers."""}
+            return {"input": output.get("input"), "output": """The response took too long to generate, please try again. If the problem persists, please try another question or notify the developers."""}
         # Means that the AI tripped the filter on Azure
         except HTTPError:
-            return {"input": output.get("input"), "output": """Hi there, your prompt has tripped the content safety 
-filter and unfortunately I cannot answer your question. Please know that I am here to help with any 
-questions that depend on academic research and learning. If you have any other questions, feel free to ask!
+            return {"input": output.get("input"), "output": """Hi there, your prompt has tripped the content safety filter and unfortunately I cannot answer your question. Please know that I am here to help with any questions that depend on academic research and learning. If you have any other questions, feel free to ask!
             """}
 
     chain = RunnableMap({
@@ -282,12 +278,15 @@ questions that depend on academic research and learning. If you have any other q
     }) | chain_decision
 
     # Initial question
-    response = chain.invoke(
-        {
-            "question": question,
-            "chat_history": router_memory.load_memory_variables({})
-        }
-    )
+    try:
+        response = chain.invoke(
+            {
+                "question": question,
+                "chat_history": router_memory.load_memory_variables({})
+            }
+        )
+    except Exception as e:
+        response = {"input": question, "output": """There was a problem attempting to generate a response, please wait and try again at a later time. If the problem persists, please check your internet connection."""}
 
     router_memory.save_context({"input": response.get("input")}, {"output": response.get("input")})
     return response.get("output")

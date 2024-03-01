@@ -40,6 +40,4 @@ def conversation_with_memory():
     response = llama.conversation_with_memory(memory_key, question)
     return jsonify({'response': response}), 200
 
-# TBD: pull MySQL data from database based on memory_key
-# Expects JSON with memory_key (ID for user chat)
-# Returns JSON with respone(s)
+
