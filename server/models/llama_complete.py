@@ -1,5 +1,6 @@
 import os
 from datetime import date
+from urllib.error import HTTPError
 import warnings
 # Ignore warnings, mainly telling you how to use the APIs
 warnings.simplefilter(action='ignore', category=Warning)
@@ -20,7 +21,7 @@ from server.service.llama_functions import llm
 
 # Alot of this code is pulled from AgentToRouter.py and llama_functions.py
 # To show how the AI thinks and responds, change debug to True
-def llama_complete(question: str, memory: ConversationBufferWindowMemory, debug: bool = True):
+def llama_complete(question: str, memory: ConversationBufferWindowMemory, debug: bool = False):
     llama = llm()
     router_memory = memory
 
@@ -73,7 +74,7 @@ def llama_complete(question: str, memory: ConversationBufferWindowMemory, debug:
     Question: {input}
     
     Note: Your summary should:
-    - Be concise and be no longer than 300 words
+    - Be concise and must be no longer than 300 words
     - Directly address main researching findings or theoretical contributions of the topic being asked
     - Exclude any extraneous information not relevant to the core academic content
     - Use clear and accessible language to ensure that the summary is understandable to a broad audience
@@ -101,6 +102,42 @@ def llama_complete(question: str, memory: ConversationBufferWindowMemory, debug:
     The original question was: {input}
     Previous conversation history (if any): {chat_history}
     """) | llama | StrOutputParser()
+
+    ddg_prompt = PromptTemplate.from_template("""
+    "The current year is """ + str(date.today().year) + """ and the current date is """ + str(date.today()) + """.You are
+    Learnix, an academic librarian. Your task is to assist users academically using a structured response format without
+    correcting structure or format of the question. Here's how you must structure your responses:
+
+    1. Thought: Consider if using a tool is necessary. Answer 'Yes' or 'No'.
+    2. If 'Yes':
+    - Action: Specify which tool you will use, it must be the tools exact name from [{tool_names}], and should not have
+    any punctuation (Example: '.') or additional text.
+    - Action Input: Give the input you want to the tool, make sure to follow what the tool expects for Action Input
+    - Observation: Summarize the outcome of using the tool.
+    3. If 'No' or after using tools:
+    - Final Answer: Provide a comprehensive answer to the question.
+
+    It is crucial to follow this format strictly. For example:
+    
+    Thought: Do I need to use a tool? Yes
+    Action: Wikipedia
+    Action Input: 'Quantum Computing Basics'
+    Observation: Wikipedia provided a detailed overview of quantum computing principles.
+    Thought: Do I need to use a tool? No
+    Final Answer: Quantum computing is a field of computing focused on developing computer technology based on the
+    principles of quantum theory...
+
+    You have access to the following tools:
+
+    {tools}
+    If no relevant information can be found on DuckDuckGo, inform the user that the information could not be found
+    and give summary on what information was found. Only use the tool once.
+    Do not include any additional text outside of Thought, Action, Action Input, Observation, or Final Answer.
+    Your response must strictly adhere to the provided structure. Begin!
+    
+    Question: {input}
+    Thought:{agent_scratchpad}
+    """)
 
     # Prompt for Agents, works for both search and paper agents
     # Can also sub PromptTemplate for hub.pull("zac-dot/react-adjusted")
@@ -189,7 +226,7 @@ def llama_complete(question: str, memory: ConversationBufferWindowMemory, debug:
     ]
 
     # Agent creation
-    search_agent = create_react_agent(llm=llama, tools=search_tool, prompt=search_prompt)
+    search_agent = create_react_agent(llm=llama, tools=search_tool, prompt=ddg_prompt)
     research_agent = create_react_agent(llm=llama, tools=paper_tools, prompt=search_prompt)
 
     # Executors for each agent
@@ -224,12 +261,20 @@ def llama_complete(question: str, memory: ConversationBufferWindowMemory, debug:
                 return temp_dict
             else:
                 raise ValueError
+        # Means that the AI couldn't make a decision from first chain
         except ValueError:
             return {"input": output.get("input"), "output":  """Learnix has encountered an error in the routing logic. 
 Please try again. If the problem persists, please try another question or notify the developers."""}
+        # Means that the AI took too long to respond
         except TimeoutError:
             return {"input": output.get("input"), "output": """The response took too long to generate, please try again.
  If the problem persists, please try another question or notify the developers."""}
+        # Means that the AI tripped the filter on Azure
+        except HTTPError:
+            return {"input": output.get("input"), "output": """Hi there, your prompt has tripped the content safety 
+filter and unfortunately I cannot answer your question. Please know that I am here to help with any 
+questions that depend on academic research and learning. If you have any other questions, feel free to ask!
+            """}
 
     chain = RunnableMap({
         "action": router_chain,
