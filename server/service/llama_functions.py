@@ -23,6 +23,7 @@ def llm():
         content_formatter=LlamaChatContentFormatter(),
         model_kwargs={"temperature": 0.8,
                       "max_tokens": 1048},
+        request_timeout=120,
     )
     return model
 

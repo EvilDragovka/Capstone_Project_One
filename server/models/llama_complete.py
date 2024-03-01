@@ -19,7 +19,8 @@ from langsmith import Client
 from server.service.llama_functions import llm
 
 # Alot of this code is pulled from AgentToRouter.py and llama_functions.py
-def llama_complete(question: str, memory: ConversationBufferWindowMemory):
+# To show how the AI thinks and responds, change debug to True
+def llama_complete(question: str, memory: ConversationBufferWindowMemory, debug: bool = True):
     llama = llm()
     router_memory = memory
 
@@ -43,13 +44,14 @@ def llama_complete(question: str, memory: ConversationBufferWindowMemory):
       'current', 'now', 'this year', like 'latest', 'updated', 'today', or any specific dates or times, and the answer
        isn't in your knowledge base, respond with 'SEARCH' only. This applies to any terms that imply timeliness or that
     the information may change frequently and is not historical or well-known.
-     - If the question is about specific academic papers, meaning a DOI number (ex: 1888.083919) or specific academic 
-     author, respond ONLY with 'PAPER'
-     - If the question could be answered with some more information from academic papers, respond ONLY with 'PAPERSEARCH'
-     - If you already have an answer or don't know which to respond to, respond ONLY with 'ANSWER'
+     - If the question is about specific academic papers, such as a DOI number (ex: 1888.083919) or specific academic 
+     author, respond ONLY with 'PAPER'. If if the question can be answered with some more information, respond with this
+     as well
      - If you don't know the answer and don't choose any previous options, respond ONLY with 'GENERAL'
-    
-    To repeat, the only words you can respond with are: 'GENERAL', 'SEARCH', 'PAPER', 'PAPERSEARCH', 'ANSWER'
+     - If the question asked is providing information or guidance on illegal activities, self-harm, or any other
+        dangerous activities, respond with 'FILTER'
+        
+    To repeat, the only words you can respond with are: 'GENERAL', 'SEARCH', 'PAPER', 'ANSWER', and 'FILTER'
     
     If there is a previous conversation, use it ONLY context for the question: {chat_history}
     Question: {question}
@@ -58,55 +60,51 @@ def llama_complete(question: str, memory: ConversationBufferWindowMemory):
 
     # Base Chain Prompt
     base_chain = PromptTemplate.from_template("""
-    You are called Learnix, but do not mention yourself, with the main goal to help people with their academics and research.
-    Keep the answer under 300 words maximum. If the question is about a specific topic, provide a brief summary of the
-    topic. If the question is about a specific event, provide a brief summary of the event. If the question is about a
-    specific person, provide a brief summary of the person.
-    The current year is""" + str(date.today().year) + """ and the current date is """ + str(date.today()) + """.
-    If there was a previous conversation, here is the history: {chat_history}
+    You are Learnix, an AI designed to assist with academic and research endeavors. Your primary function is to provide
+    concise summaries of academic research, ensuring that each response adheres to a strict word limit of 300 words. 
+    When responding to queries about specific topics, offer a succinct overview of the subject matter, focusing on key
+    insights and findings relevant to the academic community.
+    
+    Current year: """ + str(date.today().year) + """ 
+    and the current date: """ + str(date.today()) + """
+    
+    Previous conversation history (if any): {chat_history}
     Respond to the question:
-    Question: {input}""") | llama | StrOutputParser()
+    Question: {input}
+    
+    Note: Your summary should:
+    - Be concise and be no longer than 300 words
+    - Directly address main researching findings or theoretical contributions of the topic being asked
+    - Exclude any extraneous information not relevant to the core academic content
+    - Use clear and accessible language to ensure that the summary is understandable to a broad audience
+    
+    """) | llama | StrOutputParser()
 
-    # Prompt for Searching
+    # Filter Chain Prompt
+    # Meant to be used if the AI is tripped by the filter
+    filtered_chain = PromptTemplate.from_template("""
+    You are Learnix, an AI designed to assist with academic and research endeavors, however it appears
+    that the question asked is providing information or guidance on illegal activities, self-harm, academic dishonesty,
+    or other dangerous or unethical activities. As a result, you MUST not respond to the original question, instead:
+    1. Respond with a message that the question is not appropriate and that you cannot answer it.
+    2. Provide a brief explanation of why the question cannot be answered.
+    3. Offer to help with any other academic or research-related questions and encourage academic questions
+    4. Encourage the user to seek help from a professional or a trusted individual if the question is about self-harm
+    5. If the question is about illegal activities, encourage the user to seek help from a legal professional or a
+    trusted individual.
+    
+    Please ensure that your entire response, including all parts listed above, does not exceed 200 words in total.
+    
+    Current year: """ + str(date.today().year) + """ 
+    and the current date: """ + str(date.today()) + """
+    
+    The original question was: {input}
+    Previous conversation history (if any): {chat_history}
+    """) | llama | StrOutputParser()
+
+    # Prompt for Agents, works for both search and paper agents
     # Can also sub PromptTemplate for hub.pull("zac-dot/react-adjusted")
     search_prompt = PromptTemplate.from_template("""
-    "The current year is """ + str(date.today().year) + """ and the current date is """ + str(date.today()) + """.You are
-    Learnix, an academic librarian. Your task is to assist users academically using a structured response format without
-    correcting structure or format of the question. Here's how you must structure your responses:
-
-    1. Thought: Consider if using a tool is necessary. Answer 'Yes' or 'No'.
-    2. If 'Yes':
-    - Action: Specify which tool you will use, it must be the tools exact name from [{tool_names}], and should not have
-    any punctuation (Example: '.') or additional text.
-    - Action Input: Give the input you want to the tool, make sure to follow what the tool expects for Action Input
-    - Observation: Summarize the outcome of using the tool.
-    3. If 'No' or after using tools:
-    - Final Answer: Provide a comprehensive answer to the question.
-
-    It is crucial to follow this format strictly. For example:
-    
-    Thought: Do I need to use a tool? Yes
-    Action: Wikipedia
-    Action Input: 'Quantum Computing Basics'
-    Observation: Wikipedia provided a detailed overview of quantum computing principles.
-    Thought: Do I need to use a tool? No
-    Final Answer: Quantum computing is a field of computing focused on developing computer technology based on the
-    principles of quantum theory...
-
-    You have access to the following tools:
-
-    {tools}
-    
-    Do not include any additional text outside of Thought, Action, Action Input, Observation, or Final Answer.
-    Your response must strictly adhere to the provided structure. Begin!
-    
-    Question: {input}
-    Thought:{agent_scratchpad}
-    """)
-
-    # Prompt for Paper Searching
-    # Can also sub out PromptTemplate for hub.pull("zac-dot/react-adjusted-papersearch")
-    papersearch_prompt = PromptTemplate.from_template("""
     "The current year is """ + str(date.today().year) + """ and the current date is """ + str(date.today()) + """.You are
     Learnix, an academic librarian. Your task is to assist users academically using a structured response format without
     correcting structure or format of the question. Here's how you must structure your responses:
@@ -147,14 +145,24 @@ def llama_complete(question: str, memory: ConversationBufferWindowMemory):
         Tool(
             name="DuckDuckGo",
             func=search.run,
-            description="""When parsing information from DuckDuckGo, especially for queries for
-            example: 'Super Bowl winners,' it's important to focus on extracting factual data from these Instant Answers
-            or the list of search results provided. Action Input must be the exact search query for the paper. Example:
-            'Quantum Computing' """
+            description="""
+            Use DuckDuckGo Search Tool for single, focused searches in academic research. It retrieves factual data from
+            Instant Answers and top search results, synthesizing it into a coherent response.
+            
+            **Guidelines:**
+            - Input a clear, concise search query.
+            - Tool performs one search per query, avoiding loops.
+            - Extracts and processes relevant information for a direct response.
+
+            **Example:**
+            - Input: 'Quantum Computing advancements'
+            - The tool searches, then provides a synthesized response based on authoritative sources.
+            Designed for efficient, loop-free academic research using DuckDuckGo.
+            """
         ),
     ]
 
-    # Arxiv search tool
+    # Arxiv + wikipedia tools
     arxivsearch = ArxivAPIWrapper()
     wikipedia = WikipediaAPIWrapper()
     paper_tools = [
@@ -165,7 +173,7 @@ def llama_complete(question: str, memory: ConversationBufferWindowMemory):
             academic papers on the web. Information from this tool is always accurate, but make sure to summarize the
             information. When using the information from the tool, make sure to tell the user information from arxiv 
             only shows the 3 most recent papers from the author, on the topic, or similar to DOI number that is given.
-            Action Input must be the exact search query for the paper. Example: 'Quantum Computing'
+            Action Input must be the exact search query for the paper. Example: 'History of Artificial Intelligence'
             """
         ),
         Tool(
@@ -182,32 +190,46 @@ def llama_complete(question: str, memory: ConversationBufferWindowMemory):
 
     # Agent creation
     search_agent = create_react_agent(llm=llama, tools=search_tool, prompt=search_prompt)
-    research_agent = create_react_agent(llm=llama, tools=paper_tools, prompt=papersearch_prompt)
+    research_agent = create_react_agent(llm=llama, tools=paper_tools, prompt=search_prompt)
 
     # Executors for each agent
-    search_executor = AgentExecutor(agent=search_agent, tools=search_tool, verbose=True, return_intermediate_steps=True,
+    search_executor = AgentExecutor(agent=search_agent, tools=search_tool, verbose=debug, return_intermediate_steps=True,
                                     max_iterations=5, handle_parsing_errors=True)
-    research_executor = AgentExecutor(agent=research_agent, tools=paper_tools, verbose=True,
+    research_executor = AgentExecutor(agent=research_agent, tools=paper_tools, verbose=debug,
                                       return_intermediate_steps=True, max_iterations=5, handle_parsing_errors=True)
 
     # Defining the routing chain
     router_chain = prompt | llama | StrOutputParser()
 
     # The routing logic
+    # Includes basic routing, filter, search, and paper locating
+    # Also includes basic error catching for generation issues and timeouts
     def chain_decision(output):
-        if output["action"] == "GENERAL" or output["action"] == "ANSWER":
-            print("...thinking...\n")
-            output["chat_history"] = router_memory.load_memory_variables({})
-            temp_dict = {'input': output.get("input"), 'output': base_chain.invoke(output)}
-            return temp_dict
-        elif output["action"] == "SEARCH":
-            print("...searching the web...\n")
-            return search_executor
-        elif output["action"] == "PAPER" or "PAPERSEARCH":
-            print("...looking for papers or specific paper(s)...\n")
-            return research_executor
-        else:
-            raise ValueError
+        try:
+            if output["action"] == "GENERAL" or output["action"] == "ANSWER":
+                print("...thinking...\n")
+                output["chat_history"] = router_memory.load_memory_variables({})
+                temp_dict = {'input': output.get("input"), 'output': base_chain.invoke(output)}
+                return temp_dict
+            elif output["action"] == "SEARCH":
+                print("...searching the web...\n")
+                return search_executor
+            elif output["action"] == "PAPER":
+                print("...looking for papers or specific paper(s)...\n")
+                return research_executor
+            elif output["action"] == "FILTER":
+                print("...question has tripped the filter...\n")
+                output["chat_history"] = router_memory.load_memory_variables({})
+                temp_dict = {'input': output.get("input"), 'output': filtered_chain.invoke(output)}
+                return temp_dict
+            else:
+                raise ValueError
+        except ValueError:
+            return {"input": output.get("input"), "output":  """Learnix has encountered an error in the routing logic. 
+Please try again. If the problem persists, please try another question or notify the developers."""}
+        except TimeoutError:
+            return {"input": output.get("input"), "output": """The response took too long to generate, please try again.
+ If the problem persists, please try another question or notify the developers."""}
 
     chain = RunnableMap({
         "action": router_chain,
