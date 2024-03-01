@@ -1,6 +1,6 @@
 // ResultsPage.tsx
-import { useState } from 'react';
 import { searching } from './_app';
+import Markdown from 'react-markdown'
 
 interface ResultsPageProps {
     prompt: string | null;
@@ -18,7 +18,7 @@ export default function ResultsPage({ prompt, result}: ResultsPageProps) {
             <div className="search-results">
                 {!searching && <p className="search-heading">Learnix says:</p>}
                 {searching && <p className="search-heading">Learnix is thinking...</p>}
-                <p>{result}</p>
+                <Markdown>{result}</Markdown>
             </div>
         </div>
     );

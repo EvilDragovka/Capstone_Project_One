@@ -121,7 +121,7 @@ export default function App({ Component, pageProps }: AppProps) {
     //  - e.g. /resultsPage?queryID=123
     //  - Of course, each query should be associated with a user ID
     //  - So no one can access other people's queries
-    if (router.pathname.indexOf('/resultsPage') != -1 && (currentSearchQuery)) {
+    if (router.pathname.indexOf('/resultsPage') != -1 && (searching || currentSearchQuery)) {
         // const prompt = router.pathname.split('?prompt=')[1];        
         return (
             <Layout navigation={true} showResults={(i: number) => showResults(i)} fetchResults={(p: string) => fetchResults(p)}>
@@ -138,7 +138,7 @@ export default function App({ Component, pageProps }: AppProps) {
 }
 
 // Sends a prompt to the LLM and returns the response
-export async function postToLlm(p: string) {
+async function postToLlm(p: string) {
     let data = {
         question: p
     };
@@ -156,7 +156,7 @@ export async function postToLlm(p: string) {
 
 // Pushes a search query to the search history
 //   Oldest search query gets removed if the history is full
-export function pushSearchHistory(query: SearchQuery) {
+function pushSearchHistory(query: SearchQuery) {
     if (searchHistory.length >= 5) {
         searchHistory.shift();
     }
@@ -168,7 +168,7 @@ export function pushSearchHistory(query: SearchQuery) {
 }
 
 // Brings the indexed query to the top of the search history
-export function makeLatestSearchQuery(i: number) {
+function makeLatestSearchQuery(i: number) {
     if (i >= 0 && i < searchHistory.length) {
         currentSearchQuery = searchHistory[i];
         var historyStart = searchHistory.slice(0, i);
