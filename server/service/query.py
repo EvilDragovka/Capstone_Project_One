@@ -18,13 +18,6 @@ engine = create_engine(
 Session = sessionmaker(bind=engine)
 
 
-def get_all():
-    session = Session()
-    users = session.query(Query).all()
-    session.close()
-    return users
-
-
 def get_by_user_id(user_id):
     session = Session()
     queries = session.query(Query).filter_by(user_id=user_id).all()
@@ -69,3 +62,5 @@ def delete_by_id(query_id):
             session.rollback()
             logging.exception("Failed to delete query: %s", e)  # Log the exception
             return False, f"An error occurred: {e}"
+
+
