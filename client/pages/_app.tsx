@@ -27,7 +27,7 @@ export interface SearchQuery {
     queryId: string;
 }
 
-export const backendUrl = 'http://localhost:5000/';
+export const backendUrl = 'http://52.13.109.29/';
 export var searchHistory: SearchQuery[] = [];
 export var currentSearchQuery: SearchQuery | null = null;
 export const currentUser: User = { 
