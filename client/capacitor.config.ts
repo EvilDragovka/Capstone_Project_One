@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'Learnix',
   webDir: 'out',
   server: {
-    url: "http://52.13.109.29",
+    androidScheme: 'http',
     cleartext: true,
   }
 };
