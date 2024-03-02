@@ -100,7 +100,7 @@ export default function App({ Component, pageProps }: AppProps) {
     // Sign up page
     if (router.pathname === '/signUpPage') {
         return (
-            <Layout navigation={true} showResults={(i: number) => showResults(i)} fetchResults={(p: string) => fetchResults(p)}>
+            <Layout navigation={false} showResults={(i: number) => showResults(i)} fetchResults={(p: string) => fetchResults(p)}>
                 <SignUpPage />
             </Layout>
         );
@@ -109,7 +109,7 @@ export default function App({ Component, pageProps }: AppProps) {
     // Welcome page
     if (goToWelcomeUpPage) {
         return (
-            <Layout navigation={true} showResults={(i: number) => showResults(i)} fetchResults={(p: string) => fetchResults(p)}>
+            <Layout navigation={false} showResults={(i: number) => showResults(i)} fetchResults={(p: string) => fetchResults(p)}>
                 <WelcomePage />
             </Layout>
         );
