@@ -2,11 +2,11 @@ import os
 from datetime import date
 from urllib.error import HTTPError
 import warnings
+import requests
 # Ignore warnings, mainly telling you how to use the APIs
 warnings.simplefilter(action='ignore', category=Warning)
-
 from langchain.agents import load_tools, create_react_agent, AgentExecutor
-from langchain.memory import ConversationBufferWindowMemory
+from langchain.memory import ConversationBufferWindowMemory, ConversationBufferMemory
 from langchain_community.tools.ddg_search.tool import DuckDuckGoSearchResults
 from langchain_community.utilities.arxiv import ArxivAPIWrapper
 from langchain_community.utilities.duckduckgo_search import DuckDuckGoSearchAPIWrapper
@@ -16,14 +16,25 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnableMap
 from langchain_core.tools import Tool
 from langsmith import Client
-
 from server.service.llama_functions import llm
 
 # Alot of this code is pulled from AgentToRouter.py and llama_functions.py
 # To show how the AI thinks and responds, change debug to True
-def llama_complete(question: str, memory: ConversationBufferWindowMemory, debug: bool = False):
+def llama_complete(question: str,userid: int = 1,  debug: bool = False):
+    # Request made locally (Should work on the server as no external requests are made)
+    # This WILL happen every time because the memory is only the most recent 5
+    url = f"http://localhost:5000/api/queries/recent/{userid}"
+    response = requests.get(url)
+    data = response.json()
+
+    router_memory = ConversationBufferWindowMemory(k=5, return_messages=True)
+    # If there is data, then the context memory is loaded, else its just a empty memory
+    if data:
+        for i in range(len(data)):
+            router_memory.save_context({"input": data[i].get("question")}, {"output": data[i].get("response")})
+
+    # Llama model declaration
     llama = llm()
-    router_memory = memory
 
     # langsmith tracking
     os.environ["LANGCHAIN_TRACING_V2"] = "true"
