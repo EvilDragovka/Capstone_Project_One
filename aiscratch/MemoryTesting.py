@@ -18,18 +18,18 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-# userid = 1
-# url = f"http://localhost:5000/api/queries/{userid}"
-# data = {
-#     "question": "What is the meaning of life?",
-#     "response": "It is what you make of it"
-#
-# }
-# response = requests.post(url, json=data)
-# if response.status_code == 200:
-#     print("Success:, ", response)
-# else:
-#     print("Error: ", response)
+userid = 1
+url = f"http://52.13.109.29/api/queries/{userid}"
+data = {
+    "question": "What is the meaning of life?",
+    "response": "It is what you make of it"
+
+}
+response = requests.post(url, json=data)
+if response.status_code == 200:
+    print(f"{bcolors.OKGREEN}Success:{bcolors.ENDC}", response)
+else:
+    print(f"{bcolors.FAIL}Failure: {bcolors.ENDC}", response)
 
 # Test history retrerival
 print(f"{bcolors.OKGREEN}Prompt: What questions have I asked you?{bcolors.ENDC}")
