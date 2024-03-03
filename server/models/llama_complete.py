@@ -10,17 +10,38 @@ from langchain.memory import ConversationBufferWindowMemory, ConversationBufferM
 from langchain_community.tools.ddg_search.tool import DuckDuckGoSearchResults
 from langchain_community.utilities.arxiv import ArxivAPIWrapper
 from langchain_community.utilities.duckduckgo_search import DuckDuckGoSearchAPIWrapper
-from langchain.utilities import WikipediaAPIWrapper
+from langchain_community.utilities import WikipediaAPIWrapper
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnableMap
 from langchain_core.tools import Tool
 from langsmith import Client
-from server.service.llama_functions import llm
+from service.llama_functions import llm
+
+
+# POST to the server the question and response
+def save_response_to_server(userid: int, question: str, response: str):
+    url = f"http://localhost:5000/api/queries/{userid}"
+    data = {
+        "question": question,
+        "response": response
+    }
+    response = requests.post(url, json=data)
+    if response.status_code == 200:
+        return "Success"
+    else:
+        return "Error"
 
 # Alot of this code is pulled from AgentToRouter.py and llama_functions.py
 # To show how the AI thinks and responds, change debug to True
-def llama_complete(question: str,userid: int = 1,  debug: bool = False):
+def llama_complete(question: str,userid: int = 62,  debug: bool = False):
+    # Helps to notify the saving function to not save a response
+    fuse = False
+
+    if userid == 62:
+        print("Error: User ID is not set, please set the user id to the correct user id")
+        print("Will continue as normal but history will not be accurate")
+
     # Request made locally (Should work on the server as no external requests are made)
     # This WILL happen every time because the memory is only the most recent 5
     url = f"http://localhost:5000/api/queries/recent/{userid}"
@@ -32,7 +53,6 @@ def llama_complete(question: str,userid: int = 1,  debug: bool = False):
     if data:
         for i in range(len(data)):
             router_memory.save_context({"input": data[i].get("question")}, {"output": data[i].get("response")})
-    print(router_memory.load_memory_variables({}))
     # Llama model declaration
     llama = llm()
 
@@ -46,9 +66,11 @@ def llama_complete(question: str,userid: int = 1,  debug: bool = False):
     # Prompt template for conversation selection
     prompt = PromptTemplate.from_template("""
     You are called Learnix, with the main goal to help people with their academics and research. ONLY respond with a
-    single word, DO NOT add on any other statements, questions, or concerns.
+    single word, DO NOT add on any additional text.
     Choose one of the following actions:
     
+     - If the question asked is providing information or guidance on illegal activities, self-harm, or any other
+        dangerous activities, respond with 'FILTER'
      - If the question is a greeting, a farewell, or contains personal pronouns like 'you', 'your', 'I', or names like 
      'Learnix', or if it acknowledges you as an AI, then respond ONLY with 'GENERAL'. This includes any direct address 
      or salutation, questions about personal experiences, or references to the AI's identity or capabilities.
@@ -60,8 +82,6 @@ def llama_complete(question: str,userid: int = 1,  debug: bool = False):
      author, respond ONLY with 'PAPER'. If if the question can be answered with some more information, respond with this
      as well
      - If you don't know the answer and don't choose any previous options, respond ONLY with 'GENERAL'
-     - If the question asked is providing information or guidance on illegal activities, self-harm, or any other
-        dangerous activities, respond with 'FILTER'
         
     To repeat, the only words you can respond with are: 'GENERAL', 'SEARCH', 'PAPER', 'ANSWER', and 'FILTER'
     
@@ -114,42 +134,6 @@ def llama_complete(question: str,userid: int = 1,  debug: bool = False):
     Previous conversation history (if any): {chat_history}
     """) | llama | StrOutputParser()
 
-    ddg_prompt = PromptTemplate.from_template("""
-    "The current year is """ + str(date.today().year) + """ and the current date is """ + str(date.today()) + """.You are
-    Learnix, an academic librarian. Your task is to assist users academically using a structured response format without
-    correcting structure or format of the question. Here's how you must structure your responses:
-
-    1. Thought: Consider if using a tool is necessary. Answer 'Yes' or 'No'.
-    2. If 'Yes':
-    - Action: Specify which tool you will use, it must be the tools exact name from [{tool_names}], and should not have
-    any punctuation (Example: '.') or additional text.
-    - Action Input: Give the input you want to the tool, make sure to follow what the tool expects for Action Input
-    - Observation: Summarize the outcome of using the tool.
-    3. If 'No' or after using tools:
-    - Final Answer: Provide a comprehensive answer to the question.
-
-    It is crucial to follow this format strictly. For example:
-    
-    Thought: Do I need to use a tool? Yes
-    Action: Wikipedia
-    Action Input: 'Quantum Computing Basics'
-    Observation: Wikipedia provided a detailed overview of quantum computing principles.
-    Thought: Do I need to use a tool? No
-    Final Answer: Quantum computing is a field of computing focused on developing computer technology based on the
-    principles of quantum theory...
-
-    You have access to the following tools:
-
-    {tools}
-    If no relevant information can be found on DuckDuckGo, inform the user that the information could not be found
-    and give summary on what information was found. Only use the tool once.
-    Do not include any additional text outside of Thought, Action, Action Input, Observation, or Final Answer.
-    Your response must strictly adhere to the provided structure. Begin!
-    
-    Question: {input}
-    Thought:{agent_scratchpad}
-    """)
-
     # Prompt for Agents, works for both search and paper agents
     # Can also sub PromptTemplate for hub.pull("zac-dot/react-adjusted")
     search_prompt = PromptTemplate.from_template("""
@@ -189,27 +173,6 @@ def llama_complete(question: str,userid: int = 1,  debug: bool = False):
 
     # DDG search tool
     search = DuckDuckGoSearchResults(api_wrapper=DuckDuckGoSearchAPIWrapper(max_results=3))
-    search_tool = [
-        Tool(
-            name="DuckDuckGo",
-            func=search.run,
-            description="""
-            Use DuckDuckGo Search Tool for single, focused searches in academic research. It retrieves factual data from
-            Instant Answers and top search results, synthesizing it into a coherent response.
-            
-            **Guidelines:**
-            - Input a clear, concise search query.
-            - Tool performs one search per query, avoiding loops.
-            - Extracts and processes relevant information for a direct response.
-
-            **Example:**
-            - Input: 'Quantum Computing advancements'
-            - The tool searches, then provides a synthesized response based on authoritative sources.
-            Designed for efficient, loop-free academic research using DuckDuckGo.
-            """
-        ),
-    ]
-
     # Arxiv + wikipedia tools
     arxivsearch = ArxivAPIWrapper()
     wikipedia = WikipediaAPIWrapper()
@@ -233,17 +196,32 @@ def llama_complete(question: str,userid: int = 1,  debug: bool = False):
             verified alongside other sources.
             Action Input must be the exact search query for the topic. Example: 'Evolution of Quantum Computing' 
             """
+        ),
+        Tool(
+            name="DuckDuckGo",
+            func=search.run,
+            description="""
+            Use DuckDuckGo Search Tool for single, focused searches in academic research. It retrieves factual data from
+            Instant Answers and top search results, synthesizing it into a coherent response.
+            
+            **Guidelines:**
+            - Input a clear, concise search query.
+            - Tool performs one search per query, avoiding loops.
+            - Extracts and processes relevant information for a direct response.
+
+            **Example:**
+            - Input: 'Quantum Computing advancements'
+            - The tool searches, then provides a synthesized response based on authoritative sources.
+            Designed for efficient, loop-free academic research using DuckDuckGo.
+            """
         )
     ]
 
     # Agent creation
-    search_agent = create_react_agent(llm=llama, tools=search_tool, prompt=ddg_prompt)
-    research_agent = create_react_agent(llm=llama, tools=paper_tools, prompt=search_prompt)
+    online_agent = create_react_agent(llm=llama, tools=paper_tools, prompt=search_prompt)
 
-    # Executors for each agent
-    search_executor = AgentExecutor(agent=search_agent, tools=search_tool, verbose=debug, return_intermediate_steps=True,
-                                    max_iterations=5, handle_parsing_errors=True)
-    research_executor = AgentExecutor(agent=research_agent, tools=paper_tools, verbose=debug,
+    # Executor for the agent
+    research_executor = AgentExecutor(agent=online_agent, tools=paper_tools, verbose=debug,
                                       return_intermediate_steps=True, max_iterations=5, handle_parsing_errors=True)
 
     # Defining the routing chain
@@ -253,6 +231,7 @@ def llama_complete(question: str,userid: int = 1,  debug: bool = False):
     # Includes basic routing, filter, search, and paper locating
     # Also includes basic error catching for generation issues and timeouts
     def chain_decision(output):
+        nonlocal fuse
         try:
             if output["action"] == "GENERAL" or output["action"] == "ANSWER":
                 print("...thinking...\n")
@@ -261,25 +240,29 @@ def llama_complete(question: str,userid: int = 1,  debug: bool = False):
                 return temp_dict
             elif output["action"] == "SEARCH":
                 print("...searching the web...\n")
-                return search_executor
+                return research_executor
             elif output["action"] == "PAPER":
                 print("...looking for papers or specific paper(s)...\n")
                 return research_executor
             elif output["action"] == "FILTER":
                 print("...question has tripped the filter...\n")
                 output["chat_history"] = router_memory.load_memory_variables({})
+                fuse = True
                 temp_dict = {'input': output.get("input"), 'output': filtered_chain.invoke(output)}
                 return temp_dict
             else:
                 raise ValueError
         # Means that the AI couldn't make a decision from first chain
         except ValueError:
+            fuse = True
             return {"input": output.get("input"), "output":  """Learnix has encountered an error in the routing logic. Please try again. If the problem persists, please try another question or notify the developers."""}
         # Means that the AI took too long to respond
         except TimeoutError:
+            fuse = True
             return {"input": output.get("input"), "output": """The response took too long to generate, please try again. If the problem persists, please try another question or notify the developers."""}
         # Means that the AI tripped the filter on Azure
         except HTTPError:
+            fuse = True
             return {"input": output.get("input"), "output": """Hi there, your prompt has tripped the content safety filter and unfortunately I cannot answer your question. Please know that I am here to help with any questions that depend on academic research and learning. If you have any other questions, feel free to ask!
             """}
 
@@ -297,7 +280,13 @@ def llama_complete(question: str,userid: int = 1,  debug: bool = False):
             }
         )
     except Exception as e:
+        fuse = True
         response = {"input": question, "output": """There was a problem attempting to generate a response, please wait and try again at a later time. If the problem persists, please check your internet connection."""}
 
-    router_memory.save_context({"input": response.get("input")}, {"output": response.get("input")})
+    # Save the response to the server
+    if fuse is False:
+        save_response_to_server(userid, question, response.get("output"))
+    else:
+        print("Response was not saved due to an function error of the AI")
+
     return response.get("output")

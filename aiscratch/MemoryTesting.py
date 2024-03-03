@@ -1,5 +1,5 @@
 from langchain.memory import ConversationBufferWindowMemory
-from server.models.llama_complete import llama_complete
+from models.llama_complete import llama_complete
 import warnings
 import requests
 # Ignore warnings, mainly telling you how to use the APIs
@@ -18,7 +18,7 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-userid = 1
+# userid = 1
 # url = f"http://localhost:5000/api/queries/{userid}"
 # data = {
 #     "question": "What is the meaning of life?",
@@ -32,5 +32,5 @@ userid = 1
 #     print("Error: ", response)
 
 # Test history retrerival
-print(f"{bcolors.OKGREEN}Prompt: What did I previously ask you?{bcolors.ENDC}")
-print(llama_complete("What did I previously ask you?", 1))
+print(f"{bcolors.OKGREEN}Prompt: What questions have I asked you?{bcolors.ENDC}")
+print(llama_complete("What questions have I asked you?", 1))

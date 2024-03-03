@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
-import server.service.llama_functions as llama
-
+import service.llama_functions as llama
+import models.llama_complete as llama_complete
 llama_bp = Blueprint('llama_bp', __name__)
 
 
@@ -41,3 +41,15 @@ def conversation_with_memory():
     return jsonify({'response': response}), 200
 
 
+# Conversation with Llama Complete, use for conversations with userid
+# This includes the ability to research online and store the conversation for future reference
+# Expects JSON with userid and question
+# Returns JSON with response (Output from llm)
+# Debug is inaccessible from the API
+@llama_bp.route('/llama_complete', methods=['POST'])
+def llama_complete():
+    data = request.json
+    question = data['question']
+    userid = data['userid']
+    response = llama_complete.llama_complete(question, userid)
+    return jsonify({'response': response}), 200
