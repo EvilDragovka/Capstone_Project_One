@@ -72,6 +72,7 @@ export default function App({ Component, pageProps }: AppProps) {
             console.error('Error:', error);
             searching = false;
             setDisplayedResult("I'm sorry, something went wrong. Please try again.");
+            return;
         })
         console.log('Finished search.');
             
