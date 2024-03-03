@@ -16,12 +16,12 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnableMap
 from langchain_core.tools import Tool
 from langsmith import Client
-from service.llama_functions import llm
+from server.service.llama_functions import llm
 
 
 # POST to the server the question and response
 def save_response_to_server(userid: int, question: str, response: str):
-    url = f"http://localhost:5000/api/queries/{userid}"
+    url = f"http://52.13.109.29/api/queries/{userid}"
     data = {
         "question": question,
         "response": response
@@ -44,7 +44,7 @@ def llama_complete(question: str,userid: int = 62,  debug: bool = False):
 
     # Request made locally (Should work on the server as no external requests are made)
     # This WILL happen every time because the memory is only the most recent 5
-    url = f"http://localhost:5000/api/queries/recent/{userid}"
+    url = f"http://52.13.109.29/api/queries/recent/{userid}"
     response = requests.get(url)
     data = response.json()
 
