@@ -32,7 +32,7 @@ def llama_complete(question: str,userid: int = 1,  debug: bool = False):
     if data:
         for i in range(len(data)):
             router_memory.save_context({"input": data[i].get("question")}, {"output": data[i].get("response")})
-
+    print(router_memory.load_memory_variables({}))
     # Llama model declaration
     llama = llm()
 

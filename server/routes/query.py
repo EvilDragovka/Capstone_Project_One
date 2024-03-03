@@ -11,6 +11,7 @@ def get_by_user_id(user_id):
     return jsonify([query.to_dict() for query in queries])
 
 
+# Get recent queries, used in llama_complete
 @query_bp.route('/recent/<int:user_id>', methods=['GET'])
 def get_recent(user_id):
     count = int(request.args.get('count', 5))
@@ -19,11 +20,15 @@ def get_recent(user_id):
     print(queries)
     return jsonify([query.to_dict() for query in queries])
 
-
-@query_bp.route('/<int:user_id>', methods=['POSST'])
+# Adds into database, expects user_id, question, and response
+# Expects a json object
+@query_bp.route('/<int:user_id>', methods=['POST'])
 def create(user_id):
-    question = int(request.args.get('question'))
-    response = int(request.args.get('response'))
+    data = request.get_json()
+    if data is None:
+        return jsonify({'error': 'Invalid request, data is missing'}), 400
+    question = data.get('question')
+    response = data.get('response')
     success, message = query_service.create(user_id, question=question, response=response)
     if success:
         return jsonify({'message': message}), 200

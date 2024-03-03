@@ -1,7 +1,7 @@
 import logging
 from datetime import date
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
 from config import Config
 from models.query import Query
@@ -27,7 +27,7 @@ def get_by_user_id(user_id):
 
 def get_recent(user_id, count, offset):
     session = Session()
-    queries = session.query(Query).filter_by(user_id=user_id).order_by(Query.id).limit(count).offset(offset).all()
+    queries = session.query(Query).filter_by(user_id=user_id).order_by(desc(Query.id)).limit(count).offset(offset).all()
     session.close()
     return queries
 

@@ -18,6 +18,19 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
+userid = 1
+# url = f"http://localhost:5000/api/queries/{userid}"
+# data = {
+#     "question": "What is the meaning of life?",
+#     "response": "It is what you make of it"
+#
+# }
+# response = requests.post(url, json=data)
+# if response.status_code == 200:
+#     print("Success:, ", response)
+# else:
+#     print("Error: ", response)
+
 # Test history retrerival
 print(f"{bcolors.OKGREEN}Prompt: What did I previously ask you?{bcolors.ENDC}")
 print(llama_complete("What did I previously ask you?", 1))
