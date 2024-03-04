@@ -16,7 +16,7 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnableMap
 from langchain_core.tools import Tool
 from langsmith import Client
-from server.service.llama_functions import llm
+from service.llama_functions import llm
 
 
 # POST to the server the question and response
@@ -234,18 +234,18 @@ def llama_complete(question: str,userid: int = 62,  debug: bool = False):
         nonlocal fuse
         try:
             if output["action"] == "GENERAL" or output["action"] == "ANSWER":
-                print("...thinking...\n")
+                print("Using base llama2 - Model Generating...")
                 output["chat_history"] = router_memory.load_memory_variables({})
                 temp_dict = {'input': output.get("input"), 'output': base_chain.invoke(output)}
                 return temp_dict
             elif output["action"] == "SEARCH":
-                print("...searching the web...\n")
+                print("Model using tools - Model Searching & Summarizing... (Search)")
                 return research_executor
             elif output["action"] == "PAPER":
-                print("...looking for papers or specific paper(s)...\n")
+                print("Model using tools - Model Searching & Summarizing... (Paper)")
                 return research_executor
             elif output["action"] == "FILTER":
-                print("...question has tripped the filter...\n")
+                print("Azure Saftey / Llama Filter Tripped - Model Generating...")
                 output["chat_history"] = router_memory.load_memory_variables({})
                 fuse = True
                 temp_dict = {'input': output.get("input"), 'output': filtered_chain.invoke(output)}
@@ -281,6 +281,7 @@ def llama_complete(question: str,userid: int = 62,  debug: bool = False):
         )
     except Exception as e:
         fuse = True
+        print("Error: ", e)
         response = {"input": question, "output": """There was a problem attempting to generate a response, please wait and try again at a later time. If the problem persists, please check your internet connection."""}
 
     # Save the response to the server

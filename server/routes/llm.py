@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 import service.llama_functions as llama
-import models.llama_complete as llama_complete
+import models.llama_complete as llama_advanced
 llama_bp = Blueprint('llama_bp', __name__)
 
 
@@ -51,5 +51,5 @@ def llama_complete():
     data = request.json
     question = data['question']
     userid = data['userid']
-    response = llama_complete.llama_complete(question, userid)
+    response = llama_advanced.llama_complete(question, userid)
     return jsonify({'response': response}), 200
