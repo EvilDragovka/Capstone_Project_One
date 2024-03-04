@@ -42,9 +42,12 @@ def llama_complete(question: str,userid: int = 62,  debug: bool = False):
 
     # Request made locally (Should work on the server as no external requests are made)
     # This WILL happen every time because the memory is only the most recent 5
-    url = f"http://localhost:5000/api/queries/recent/{userid}"
+    url = f"http://52.13.109.29/api/queries/recent/{userid}"
+    print = "Hit URL for database"
     response = requests.get(url)
+    print = "sent request"
     data = response.json()
+    print = "got response"
 
     router_memory = ConversationBufferWindowMemory(k=5, return_messages=True)
     # If there is data, then the context memory is loaded, else its just a empty memory
@@ -53,7 +56,7 @@ def llama_complete(question: str,userid: int = 62,  debug: bool = False):
             router_memory.save_context({"input": data[i].get("question")}, {"output": data[i].get("response")})
     # Llama model declaration
     llama = llm()
-
+    print = "model loaded"
     # langsmith tracking
     os.environ["LANGCHAIN_TRACING_V2"] = "true"
     os.environ["LANGCHAIN_ENDPOINT"] = "https://api.smith.langchain.com"
