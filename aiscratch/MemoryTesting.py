@@ -1,5 +1,5 @@
 from langchain.memory import ConversationBufferWindowMemory
-from models.llama_complete import llama_complete
+from server.models.llama_complete import llama_complete
 import warnings
 import requests
 # Ignore warnings, mainly telling you how to use the APIs

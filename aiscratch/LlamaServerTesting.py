@@ -12,4 +12,4 @@ response = requests.post(url, json=data)
 if response.status_code == 200:
     print(f"Success:", response.json())
 else:
-    print(f"Failure:", response.json())
+    print(f"Failure:", response)
