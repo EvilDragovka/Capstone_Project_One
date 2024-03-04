@@ -3,8 +3,6 @@ from datetime import date
 from urllib.error import HTTPError
 import warnings
 import requests
-# Ignore warnings, mainly telling you how to use the APIs
-warnings.simplefilter(action='ignore', category=Warning)
 from langchain.agents import load_tools, create_react_agent, AgentExecutor
 from langchain.memory import ConversationBufferWindowMemory, ConversationBufferMemory
 from langchain_community.tools.ddg_search.tool import DuckDuckGoSearchResults
@@ -16,7 +14,7 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnableMap
 from langchain_core.tools import Tool
 from langsmith import Client
-from server.service.llama_functions import llm
+from service.llama_functions import llm
 
 
 # POST to the server the question and response
@@ -44,7 +42,7 @@ def llama_complete(question: str,userid: int = 62,  debug: bool = False):
 
     # Request made locally (Should work on the server as no external requests are made)
     # This WILL happen every time because the memory is only the most recent 5
-    url = f"http://52.13.109.29/api/queries/recent/{userid}"
+    url = f"http://localhost/api/queries/recent/{userid}"
     response = requests.get(url)
     data = response.json()
 
