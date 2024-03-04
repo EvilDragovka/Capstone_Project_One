@@ -16,7 +16,7 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnableMap
 from langchain_core.tools import Tool
 from langsmith import Client
-from service.llama_functions import llm
+from server.service.llama_functions import llm
 
 
 # POST to the server the question and response

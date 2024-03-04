@@ -51,8 +51,5 @@ def llama_complete():
     data = request.json
     question = data['question']
     userid = data['userid']
-    success, message = llama_advanced.llama_complete(question, userid)
-    if success:
-        return jsonify({'response': message}), 200
-    else:
-        return jsonify({'error': message}), 400
+    message = llama_advanced.llama_complete(question, userid)
+    return jsonify({'response': message}), 200
