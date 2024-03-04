@@ -42,7 +42,7 @@ def llama_complete(question: str,userid: int = 62,  debug: bool = False):
 
     # Request made locally (Should work on the server as no external requests are made)
     # This WILL happen every time because the memory is only the most recent 5
-    url = f"http://localhost/api/queries/recent/{userid}"
+    url = f"http://localhost:5000/api/queries/recent/{userid}"
     response = requests.get(url)
     data = response.json()
 
