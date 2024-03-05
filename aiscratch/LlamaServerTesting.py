@@ -4,7 +4,7 @@ import requests
 userid = 1
 url = f"http://52.13.109.29/api/llama/llama_complete"
 data = {
-    "question": "Who about the one this year?",
+    "question": "What does the paper 1605.08386 say?",
     "userid": userid
 }
 

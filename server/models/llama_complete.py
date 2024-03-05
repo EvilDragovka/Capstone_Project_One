@@ -1,10 +1,9 @@
 import os
 from datetime import date
 from urllib.error import HTTPError
-import warnings
 import requests
-from langchain.agents import load_tools, create_react_agent, AgentExecutor
-from langchain.memory import ConversationBufferWindowMemory, ConversationBufferMemory
+from langchain.agents import create_react_agent, AgentExecutor
+from langchain.memory import ConversationBufferWindowMemory
 from langchain_community.tools.ddg_search.tool import DuckDuckGoSearchResults
 from langchain_community.utilities.arxiv import ArxivAPIWrapper
 from langchain_community.utilities.duckduckgo_search import DuckDuckGoSearchAPIWrapper
@@ -14,7 +13,7 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnableMap
 from langchain_core.tools import Tool
 from langsmith import Client
-from server.service.llama_functions import llm
+from service.llama_functions import llm, adjusted_llm
 
 
 # POST to the server the question and response
@@ -30,9 +29,10 @@ def save_response_to_server(userid: int, question: str, response: str):
     else:
         return "Error"
 
+
 # Alot of this code is pulled from AgentToRouter.py and llama_functions.py
 # To show how the AI thinks and responds, change debug to True
-def llama_complete(question: str,userid: int = 62,  debug: bool = False):
+def llama_complete(question: str, userid: int = 62, debug: bool = True):
     # Helps to notify the saving function to not save a response
     fuse = False
 
@@ -51,8 +51,14 @@ def llama_complete(question: str,userid: int = 62,  debug: bool = False):
     if data:
         for i in range(len(data)):
             router_memory.save_context({"input": data[i].get("question")}, {"output": data[i].get("response")})
+
     # Llama model declaration
+    # Used for general responses
     llama = llm()
+
+    # Severely adjusted llama model limiting the model to only 30 tokens (22 words), used for context analysis
+    llama_adjusted = adjusted_llm(temperature=0.6, max_tokens=30, presence_penalty=0)
+
     # langsmith tracking
     os.environ["LANGCHAIN_TRACING_V2"] = "true"
     os.environ["LANGCHAIN_ENDPOINT"] = "https://api.smith.langchain.com"
@@ -80,7 +86,8 @@ def llama_complete(question: str,userid: int = 62,  debug: bool = False):
      as well
      - If you don't know the answer and don't choose any previous options, respond ONLY with 'GENERAL'
         
-    To repeat, the only words you can respond with are: 'GENERAL', 'SEARCH', 'PAPER', 'ANSWER', and 'FILTER'
+    To repeat, the ONLY words you can respond with are: 'GENERAL', 'SEARCH', 'PAPER', 'ANSWER', and 'FILTER' and
+    you can respond ONLY with a single word.
     
     If there is a previous conversation, use it ONLY context for the question: {chat_history}
     Question: {question}
@@ -140,12 +147,14 @@ def llama_complete(question: str,userid: int = 62,  debug: bool = False):
 
     1. Thought: Consider if using a tool is necessary. Answer 'Yes' or 'No'.
     2. If 'Yes':
-    - Action: Specify which tool you will use, it must be the tools exact name from [{tool_names}], and should not have
-    any punctuation (Example: '.') or additional text.
+    - Action: Specify which tool you will use. Choose from [{tool_names}]. Use the tool's exact name without any punctuation
+     or additional text.
     - Action Input: Give the input you want to the tool, make sure to follow what the tool expects for Action Input
-    - Observation: Summarize the outcome of using the tool.
+    - Observation: Describe in detail the outcome of using the tool. Include specific information, data, or insights 
+    gained from the tool's output.
     3. If 'No' or after using tools:
-    - Final Answer: Provide a comprehensive answer to the question.
+    - Final Answer:  Using the detailed observations from the tool(s), provide a comprehensive and accurate answer to 
+    the question. Ensure the final answer directly utilizes the information gathered during the Observation step.
 
     It is crucial to follow this format strictly. For example:
     
@@ -216,13 +225,16 @@ def llama_complete(question: str,userid: int = 62,  debug: bool = False):
 
     # Agent creation
     online_agent = create_react_agent(llm=llama, tools=paper_tools, prompt=search_prompt)
-
     # Executor for the agent
-    research_executor = AgentExecutor(agent=online_agent, tools=paper_tools, verbose=debug,
-                                      return_intermediate_steps=True, max_iterations=5, handle_parsing_errors=True)
+    research_executor = AgentExecutor(agent=online_agent,
+                                      tools=paper_tools,
+                                      verbose=debug,
+                                      return_intermediate_steps=True,
+                                      max_iterations=3,
+                                      handle_parsing_errors=True)
 
     # Defining the routing chain
-    router_chain = prompt | llama | StrOutputParser()
+    router_chain = prompt | llama_adjusted | StrOutputParser()
 
     # The routing logic
     # Includes basic routing, filter, search, and paper locating
@@ -248,20 +260,31 @@ def llama_complete(question: str,userid: int = 62,  debug: bool = False):
                 temp_dict = {'input': output.get("input"), 'output': filtered_chain.invoke(output)}
                 return temp_dict
             else:
-                raise ValueError
+                print("ALERT: AI could not make a decision, falling back to general response")
+                output["chat_history"] = router_memory.load_memory_variables({})
+                temp_dict = {'input': "I got a little confused thinking about an answer, but let me see if I can "
+                                      "awnser \n\n" + output.get("input"), 'output': base_chain.invoke(output)}
+                return temp_dict
         # Means that the AI couldn't make a decision from first chain
         except ValueError:
             fuse = True
-            return {"input": output.get("input"), "output":  """Learnix has encountered an error in the routing logic. Please try again. If the problem persists, please try another question or notify the developers."""}
+            return {"input": output.get("input"), "output": "Learnix has encountered an error in the routing logic. "
+                                                            "Please try again. If the problem persists, please try "
+                                                            "another question or notify the developers."}
         # Means that the AI took too long to respond
         except TimeoutError:
             fuse = True
-            return {"input": output.get("input"), "output": """The response took too long to generate, please try again. If the problem persists, please try another question or notify the developers."""}
+            return {"input": output.get("input"), "output": "The response took too long to generate, please try "
+                                                            "again. If the problem persists, please try another "
+                                                            "question or notify the developers."}
         # Means that the AI tripped the filter on Azure
         except HTTPError:
             fuse = True
-            return {"input": output.get("input"), "output": """Hi there, your prompt has tripped the content safety filter and unfortunately I cannot answer your question. Please know that I am here to help with any questions that depend on academic research and learning. If you have any other questions, feel free to ask!
-            """}
+            return {"input": output.get("input"), "output": "Hi there, your prompt has tripped the content safety "
+                                                            "filter and unfortunately I cannot answer your question. "
+                                                            "Please know that I am here to help with any questions "
+                                                            "that depend on academic research and learning. If you "
+                                                            "have any other questions, feel free to ask!"}
 
     chain = RunnableMap({
         "action": router_chain,
@@ -279,7 +302,9 @@ def llama_complete(question: str,userid: int = 62,  debug: bool = False):
     except Exception as e:
         fuse = True
         print("Error: ", e)
-        response = {"input": question, "output": """There was a problem attempting to generate a response, please wait and try again at a later time. If the problem persists, please check your internet connection."""}
+        response = {"input": question, "output": "There was a problem attempting to generate a response, please wait "
+                                                 "and try again at a later time. If the problem persists, "
+                                                 "please check your internet connection."}
 
     # Save the response to the server
     if fuse is False:

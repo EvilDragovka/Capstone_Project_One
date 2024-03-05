@@ -37,7 +37,7 @@ print(llama_complete("What did I previously ask you?", 1, debug))
 print(f"{bcolors.OKGREEN}Prompt: What papers have Florent Renaud published on arxiv?{bcolors.ENDC}")
 print(llama_complete("What papers have Florent Renaud published on arxiv?", 1, debug))
 # Testing out searching of a academic topic on arxiv - Mixed, last 3 times answered correctly
-print(f"{bcolors.OKGREEN}Prompt: What does the paper 1605.08386?{bcolors.ENDC}")
+print(f"{bcolors.OKGREEN}Prompt: What does the paper 1605.08386 say?{bcolors.ENDC}")
 print(llama_complete("What does the paper 1605.08386 say?", 1, debug))
 # Testing out searching recent information - Mixed, 50/50 to use tools or not
 print(f"{bcolors.OKGREEN}Prompt: Who won the most recent super bowl?{bcolors.ENDC}")
