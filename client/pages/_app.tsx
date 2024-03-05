@@ -72,20 +72,19 @@ export default function App({ Component, pageProps }: AppProps) {
             console.error('Error:', error);
             searching = false;
             setDisplayedResult("I'm sorry, something went wrong. Please try again.");
-            return;
-        })
-        console.log('Finished search.');
-            
-        // Push the search query to the search history
-        var query: SearchQuery = {
-            prompt: p,
-            result: response,
-            userId: Cookies.get('id') || '',
-            queryId: Date.now().toString()
-        };
-        pushSearchHistory(query);
-        setDisplayedResult(response);
-        searching = false;
+        }).then((response) => {
+            console.log('Finished search.');
+            // Push the search query to the search history
+            var query: SearchQuery = {
+                prompt: p,
+                result: response,
+                userId: Cookies.get('id') || '',
+                queryId: Date.now().toString()
+            };
+            pushSearchHistory(query);
+            setDisplayedResult(response);
+            searching = false;
+        });
     }
 
     // Call this to show the results of a previous search query
