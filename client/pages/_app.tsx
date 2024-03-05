@@ -140,9 +140,10 @@ export default function App({ Component, pageProps }: AppProps) {
 // Sends a prompt to the LLM and returns the response
 async function postToLlm(p: string) {
     let data = {
-        question: p
+        question: p,
+        userid: Cookies.get('id')
     };
-    const response = await fetch(backendUrl + 'api/llama/conversation', {
+    const response = await fetch(backendUrl + 'api/llama/llama_complete', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(data),
