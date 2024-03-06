@@ -53,7 +53,9 @@ export default function App({ Component, pageProps }: AppProps) {
     // Check if the user is logged in
     var goToWelcomeUpPage = currentUser.email === undefined ||
         currentUser.username === undefined ||
-        currentUser.id === undefined;
+        currentUser.id === undefined ||
+        Cookies.get('timestamp') === undefined ||
+        (Date.now() - parseInt(Cookies.get('timestamp') || '0')) > 1000 * 60 * 60 * 24 * 7;
 
     // These two functions are for the results page
     //   Well, they're passed to the layout, but they're to display the results
@@ -84,6 +86,7 @@ export default function App({ Component, pageProps }: AppProps) {
             pushSearchHistory(query);
             setDisplayedResult(response);
             searching = false;
+            Cookies.set('timestamp', Date.now().toString());
         });
     }
 
@@ -100,7 +103,7 @@ export default function App({ Component, pageProps }: AppProps) {
     // Sign up page
     if (router.pathname === '/signUpPage') {
         return (
-            <Layout navigation={false} showResults={(i: number) => showResults(i)} fetchResults={(p: string) => fetchResults(p)}>
+            <Layout navigation={false} showBottomBar={false} showResults={(i: number) => showResults(i)} fetchResults={(p: string) => fetchResults(p)}>
                 <SignUpPage />
             </Layout>
         );
@@ -109,7 +112,7 @@ export default function App({ Component, pageProps }: AppProps) {
     // Welcome page
     if (goToWelcomeUpPage) {
         return (
-            <Layout navigation={false} showResults={(i: number) => showResults(i)} fetchResults={(p: string) => fetchResults(p)}>
+            <Layout navigation={false} showBottomBar={false} showResults={(i: number) => showResults(i)} fetchResults={(p: string) => fetchResults(p)}>
                 <WelcomePage />
             </Layout>
         );
@@ -124,17 +127,21 @@ export default function App({ Component, pageProps }: AppProps) {
     if (router.pathname.indexOf('/resultsPage') != -1 && (searching || currentSearchQuery)) {
         // const prompt = router.pathname.split('?prompt=')[1];        
         return (
-            <Layout navigation={true} showResults={(i: number) => showResults(i)} fetchResults={(p: string) => fetchResults(p)}>
+            <Layout navigation={true} showBottomBar={false} showResults={(i: number) => showResults(i)} fetchResults={(p: string) => fetchResults(p)}>
                 <ResultsPage prompt={prompt} result={result}/>
             </Layout>
         );
     }
 
     return (
-        <Layout navigation={true} showResults={(i: number) => showResults(i)} fetchResults={(p: string) => fetchResults(p)}>
+        <Layout navigation={true} showBottomBar={true} showResults={(i: number) => showResults(i)} fetchResults={(p: string) => fetchResults(p)}>
             <MainPage />
         </Layout>
     );
+}
+
+export function currentSearchQueryAvailable() {
+    return (searching || currentSearchQuery);
 }
 
 // Sends a prompt to the LLM and returns the response
