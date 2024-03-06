@@ -18,16 +18,16 @@ from service.llama_functions import llm, adjusted_llm
 
 # POST to the server the question and response
 def save_response_to_server(userid: int, question: str, response: str):
-    url = f"http://52.13.109.29/api/queries/{userid}"
+    url = f"http://localhost:5000/api/queries/{userid}"
     data = {
         "question": question,
         "response": response
     }
     response = requests.post(url, json=data)
     if response.status_code == 200:
-        return "Success"
+        return "Success - Saved to database"
     else:
-        return "Error"
+        return "Error - Didnt save to database"
 
 
 # Alot of this code is pulled from AgentToRouter.py and llama_functions.py
@@ -112,7 +112,8 @@ def llama_complete(question: str, userid: int = 62, debug: bool = True):
     Question: {input}
     
     Note: Your summary should:
-    - Be concise and must be no longer than 300 words
+    - Be concise and must be no longer than 300 words, that includes anything that you want to add to the response
+    outside of the main academic content.
     - Directly address main researching findings or theoretical contributions of the topic being asked
     - Exclude any extraneous information not relevant to the core academic content
     - Use clear and accessible language to ensure that the summary is understandable to a broad audience
