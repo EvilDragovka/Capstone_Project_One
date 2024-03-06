@@ -22,7 +22,7 @@ def llm():
         endpoint_api_key=azure_key,
         content_formatter=LlamaChatContentFormatter(),
         model_kwargs={"temperature": 0.8,
-                      "max_tokens": 800},
+                      "max_tokens": 250},
         request_timeout=120,
     )
     return model

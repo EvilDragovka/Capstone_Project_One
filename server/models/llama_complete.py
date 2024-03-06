@@ -46,7 +46,7 @@ def llama_complete(question: str, userid: int = 62, debug: bool = True):
     response = requests.get(url)
     data = response.json()
 
-    router_memory = ConversationBufferWindowMemory(k=5, return_messages=True)
+    router_memory = ConversationBufferWindowMemory(k=4, return_messages=True)
     # If there is data, then the context memory is loaded, else its just a empty memory
     if data:
         for i in range(len(data)):
