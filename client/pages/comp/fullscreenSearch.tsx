@@ -12,7 +12,9 @@ const FullScreenSearch: React.FC<FullScreenSearchProps> = ({ isOpen, onClose, on
     const [textareaValue, setTextareaValue] = useState('');
 
     const handleTextareaChange = (event: any) => {
-        setTextareaValue(event.target.value);
+        if (event.target.value.length < 2000) {
+            setTextareaValue(event.target.value);
+        }
     };
 
     const handleSearch = () => {
