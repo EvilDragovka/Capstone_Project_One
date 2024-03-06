@@ -6,7 +6,7 @@ interface ResultsPageProps {
     prompt: string | null;
     result: string | null;
 }
-
+// Functional component and UI for displaying search results
 export default function ResultsPage({ prompt, result}: ResultsPageProps) {
     // The results page
     return (

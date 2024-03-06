@@ -10,6 +10,7 @@ interface SidebarProps {
   onHomeClick: () => void;
 }
 
+// Functional component for Sidebar
 const SideBar: React.FC<SidebarProps> = ({ isOpen, onClose, onQueryClick, onHomeClick, onLogoutClick }) => {
     // This is so the buttons is sorted from up to down, latest to oldest
     var history = searchHistory.slice().reverse();
@@ -24,7 +25,7 @@ const SideBar: React.FC<SidebarProps> = ({ isOpen, onClose, onQueryClick, onHome
     history.forEach((query, index) => {
         dom.push(<button className="search-query-btn" key={historyInd[index]} onClick={() => onQueryClick(historyInd[index])}><i className="fi fi-br-search"></i><text>{query.prompt}</text></button>);
     });
-
+    //sidebar UI
     return (
         <>
             <div className={`sidebar-overlay ${isOpen ? 'open' : ''}`} onClick={onClose}></div>
