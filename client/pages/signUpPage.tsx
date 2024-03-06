@@ -6,7 +6,7 @@ import WelcomePage from './welcomePage';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { backendUrl } from './_app';
-
+// React components for the sign-up page
 function SignUpPage() {
     const route = useRouter()
     const [showPassword, setShowPassword] = useState(false);
@@ -17,11 +17,12 @@ function SignUpPage() {
         password: ""
     });
 
+    // Function to see entred password
     const handlePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
 
-
+    // Function for handling input changes
     const handleChange = (e: any) => {
         const value = e.target.value;
         setData({
@@ -29,7 +30,7 @@ function SignUpPage() {
             [e.target.name]: value
         });
     };
-    
+    // Function for handling user information and sending the data to backend
     const handleSubmit = (e: any) => {
         e.preventDefault();
         const userData = {
@@ -56,6 +57,7 @@ function SignUpPage() {
         window.location.reload();
     };
 
+    //sign-up UI
     return (
         <div className="signup-container">
             <div className="signup-form-container">
