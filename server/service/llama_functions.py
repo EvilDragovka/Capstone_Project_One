@@ -21,8 +21,8 @@ def llm():
         endpoint_api_type=AzureMLEndpointApiType.serverless,
         endpoint_api_key=azure_key,
         content_formatter=LlamaChatContentFormatter(),
-        model_kwargs={"temperature": 0.8,
-                      "max_tokens": 400},
+        model_kwargs={"temperature": 0.6,
+                      "max_tokens": 500},
         request_timeout=120,
     )
     return model
