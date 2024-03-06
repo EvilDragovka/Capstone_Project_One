@@ -263,32 +263,22 @@ def llama_complete(question: str, userid: int = 62, debug: bool = True):
                 temp_dict = {'input': output.get("input"), 'output': filtered_chain.invoke(output)}
                 return temp_dict
             else:
-                print("ALERT: AI could not make a decision, falling back to general response")
+                print("ALERT: AI could not make a decision, falling back to general response\nResponse can be hallucinated")
                 output["chat_history"] = router_memory.load_memory_variables({})
-                temp_dict = {'input': output.get("input"), 'output':  "I got a little confused thinking about an "
-                                                                      "answer, but let me see if I can"
-                                                                      "awnser. I may be wrong though \n\n" + base_chain.invoke(output)}
+                temp_dict = {'input': output.get("input"), 'output': base_chain.invoke(output)}
                 return temp_dict
         # Means that the AI couldn't make a decision from first chain
         except ValueError:
             fuse = True
-            return {"input": output.get("input"), "output": "Learnix has encountered an error in the routing logic. "
-                                                            "Please try again. If the problem persists, please try "
-                                                            "another question or notify the developers."}
+            return {"input": output.get("input"), "output": "Learnix has encountered an error in the routing logic. Please try again. If the problem persists, please try another question or notify the developers."}
         # Means that the AI took too long to respond
         except TimeoutError:
             fuse = True
-            return {"input": output.get("input"), "output": "The response took too long to generate, please try "
-                                                            "again. If the problem persists, please try another "
-                                                            "question or notify the developers."}
+            return {"input": output.get("input"), "output": "The response took too long to generate, please try again. If the problem persists, please try another question or notify the developers."}
         # Means that the AI tripped the filter on Azure
         except HTTPError:
             fuse = True
-            return {"input": output.get("input"), "output": "Hi there, your prompt has tripped the content safety "
-                                                            "filter and unfortunately I cannot answer your question. "
-                                                            "Please know that I am here to help with any questions "
-                                                            "that depend on academic research and learning. If you "
-                                                            "have any other questions, feel free to ask!"}
+            return {"input": output.get("input"), "output": "Hi there, your prompt has tripped the content safety filter and unfortunately I cannot answer your question. Please know that I am here to help with any questions that depend on academic research and learning. If you have any other questions, feel free to ask!"}
 
     chain = RunnableMap({
         "action": router_chain,
