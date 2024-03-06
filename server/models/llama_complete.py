@@ -18,7 +18,7 @@ from service.llama_functions import llm, adjusted_llm
 
 # POST to the server the question and response
 def save_response_to_server(userid: int, question: str, response: str):
-    url = f"http://localhost:5000/api/queries/{userid}"
+    url = f"http://52.13.109.29/api/queries/save/{userid}"
     data = {
         "question": question,
         "response": response

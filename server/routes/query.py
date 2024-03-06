@@ -22,7 +22,7 @@ def get_recent(user_id):
 
 # Adds into database, expects user_id, question, and response
 # Expects a json object
-@query_bp.route('/<int:user_id>', methods=['POST'])
+@query_bp.route('/save/<int:user_id>', methods=['POST'])
 def create(user_id):
     data = request.get_json()
     if data is None:
