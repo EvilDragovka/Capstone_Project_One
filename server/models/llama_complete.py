@@ -265,8 +265,9 @@ def llama_complete(question: str, userid: int = 62, debug: bool = True):
             else:
                 print("ALERT: AI could not make a decision, falling back to general response")
                 output["chat_history"] = router_memory.load_memory_variables({})
-                temp_dict = {'input': "I got a little confused thinking about an answer, but let me see if I can "
-                                      "awnser \n\n" + output.get("input"), 'output': base_chain.invoke(output)}
+                temp_dict = {'input': output.get("input"), 'output':  "I got a little confused thinking about an "
+                                                                      "answer, but let me see if I can"
+                                                                      "awnser. I may be wrong though \n\n" + base_chain.invoke(output)}
                 return temp_dict
         # Means that the AI couldn't make a decision from first chain
         except ValueError:
