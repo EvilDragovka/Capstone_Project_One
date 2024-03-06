@@ -5,16 +5,18 @@ import TopBar from "./topbar";
 import SideBar from "./sidebar";
 import FullScreenSearch from "./fullscreenSearch";
 import Cookies from 'js-cookie';
+import { currentSearchQueryAvailable, searchHistory } from '../_app';
 
 interface LayoutProps {
     navigation: boolean
     children: ReactNode;
+    showBottomBar: boolean;
     showResults: (i: number) => void;
     fetchResults: (p: string) => void;
 }
 
 // The layout of the page
-//   navigation: whether to show the topbar and sidebar
+//   navigation: whether to show the topbar buttons and sidebar
 //   children: the content of the page
 //   showResults: function called when clicking on a sidebar search query
 //   fetchResults: function to call when the user makes a search
@@ -51,18 +53,12 @@ const Layout: React.FC<LayoutProps> = ({ navigation, children, showResults, fetc
     }
 
     const sidebarLogout = () => {
-        // TODO: Remove the router.push. The page should be reloaded with the layout
-        //  redirecting to the welcomePage if the user is not logged in
-        // router.push('/welcomePage');
-        // localStorage.setItem('loggedIn', 'false');
-        // Cookies.remove('id');
-        // Cookies.remove('username');
         Cookies.remove('email');
         Cookies.remove('username');
         Cookies.remove('id');
         Cookies.remove('timestamp');
+        // Cookies.remove('searchHistory');
         window.location.reload();
-        // router.push('/welcomePage');
     }
 
     // Search overlay behavior
@@ -90,6 +86,10 @@ const Layout: React.FC<LayoutProps> = ({ navigation, children, showResults, fetc
                 onLogoutClick={sidebarLogout}/>}
             {navigation && <FullScreenSearch isOpen={isSearchOpen} onClose={closeSearch} onSearch={doSearch} />}
             {children}
+            {navigation && !(currentSearchQueryAvailable() && router.pathname.indexOf('/resultsPage') != -1) && <button id="intro-search-button" onClick={toggleSearch}> 
+                {searchHistory.length > 0 ? <text>Keep at it!</text> : <text>Make the first step!</text>}
+                <i className="fi fi-br-search"></i>
+            </button>}
         </div>
     );
 };

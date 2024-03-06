@@ -4,6 +4,7 @@ import Cookies from 'js-cookie';
 import { useRouter } from 'next/router';
 import { backendUrl } from './_app';
 
+// Function for sending the login credentials to the backend
 async function loginUser(credentials: {email: string, password: string} ) {
     const response = await fetch(backendUrl + 'api/users/login', {
         method: 'POST',
@@ -26,7 +27,7 @@ async function loginUser(credentials: {email: string, password: string} ) {
     Cookies.set('timestamp', Date.now().toString());
     return response.status;
 }
-
+// React components for the login page
 function WelcomePage() {
     const router = useRouter();
     const [formData, setFormData] = useState({
@@ -36,7 +37,7 @@ function WelcomePage() {
     const [errorMessage, setErrorMessage] = useState('');
     const [title, setTitle] = useState('Welcome!');
     const [inactive, setInactive] = useState(false);
-
+    // Function for handling input changes
     const handleChange = (event: any) => {
         const { name, value } = event.target;
         setFormData(prevState => ({
@@ -44,9 +45,10 @@ function WelcomePage() {
             [name]: value
         }));
     };
-
+    // Function for submission  verification
     const onSubmitClick = async (event: any) =>  {
         event.preventDefault();
+        // Checks if the email and the password is provided
         if (formData.email === '' || formData.password === '') {
             setErrorMessage('Please fill in all fields');
             return;
@@ -55,8 +57,10 @@ function WelcomePage() {
         setTitle('Logging in...');
         setErrorMessage('');
         setInactive(true);
+        // Calls the loginUser function to attempt login
         let response = await loginUser(formData);
         console.log(response);
+        // if login is successful direct to home page, else show error message
         if (response == 200) {
             router.push('/');
             window.location.reload();
@@ -69,6 +73,7 @@ function WelcomePage() {
         setInactive(false);
     }
 
+    //login UI
     return (
         <div className="welcome-container">
             <div className="welcome-content">
