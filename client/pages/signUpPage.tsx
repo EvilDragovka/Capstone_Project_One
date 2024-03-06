@@ -53,6 +53,7 @@ function SignUpPage() {
         Cookies.set('email', data.email);
         Cookies.set('username', data.username);
         Cookies.set('id', data.email);
+        Cookies.set('timestamp', Date.now().toString());
         window.location.reload();
     };
 

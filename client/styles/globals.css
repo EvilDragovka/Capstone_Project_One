@@ -97,6 +97,31 @@ button i, button text {
   flex-direction: column;
 }
 
+#intro-search-button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  vertical-align: middle;
+  max-width: 600px;
+  width: 75%;
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  font-size: 16pt;
+  border: none;
+  border-radius: 30px;
+  color: var(--foreground-grey-accent);
+  background-color: var(--background-accent-rgb);
+  transition: background-color 0.1s ease-in;
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* move the component back by half of its width and height */
+}
+
+#intro-search-button i {
+  margin-left: .5rem;
+}
+
 #main-greeting {
   font-size: 32pt;
   font-weight: bolder;
