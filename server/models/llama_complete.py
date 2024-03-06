@@ -101,10 +101,13 @@ def llama_complete(question: str, userid: int = 62, debug: bool = True):
     When responding to queries about specific topics, offer a succinct overview of the subject matter, focusing on key
     insights and findings relevant to the academic community.
     
+    If you do not know how to respond to a question, do not make up information. Instead, respond with a message that
+    you cannot answer the question. Then give suggestions as to what else you can help with.
+    
     Current year: """ + str(date.today().year) + """ 
     and the current date: """ + str(date.today()) + """
     
-    Previous conversation history (if any): {chat_history}
+    Previous conversation history: {chat_history}
     Respond to the question:
     Question: {input}
     
