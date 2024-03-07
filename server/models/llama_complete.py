@@ -32,7 +32,7 @@ def save_response_to_server(userid: int, question: str, response: str):
 
 # Alot of this code is pulled from AgentToRouter.py and llama_functions.py
 # To show how the AI thinks and responds, change debug to True
-def llama_complete(question: str, userid: int = 62, debug: bool = True):
+def llama_complete(question: str, userid: int = 62, debug: bool = False):
     # Helps to notify the saving function to not save a response
     fuse = False
 
