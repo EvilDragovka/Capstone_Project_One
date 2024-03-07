@@ -83,7 +83,9 @@ def llama_complete(question: str, userid: int = 62, debug: bool = False):
         dangerous activities, respond with 'FILTER'
      - If the question is a greeting, a farewell, or contains personal pronouns like 'you', 'your', 'I', or names like 
      'Learnix', or if it acknowledges you as an AI, then respond ONLY with 'GENERAL'. This includes any direct address 
-     or salutation, questions about personal experiences, or references to the AI's identity or capabilities.
+     or salutation, questions about personal experiences, or references to the AI's identity or capabilities. This also 
+     includes being asked questions like "What's todays date" or "What's the current year" as these are general questions
+    that can be answered by the AI.
      - If a question suggests the need for the latest information or mentions time-sensitive words beyond 'recent',
       'current', 'now', 'this year', like 'latest', 'updated', 'today', or any specific dates or times, and the answer
        isn't in your knowledge base, respond with 'SEARCH' only. This applies to any terms that imply timeliness or that
@@ -114,7 +116,7 @@ def llama_complete(question: str, userid: int = 62, debug: bool = False):
     Current year: """ + str(date.today().year) + """ 
     and the current date: """ + str(date.today()) + """
     
-    Previous conversation history, use this for context: {chat_history}
+    Previous conversation history, use this for only when asked follow-up questions or they require context: {chat_history}
     Respond to the question:
     Question: {input}
     
