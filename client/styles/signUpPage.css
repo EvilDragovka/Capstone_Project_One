@@ -45,12 +45,29 @@
 }
 
 .signup-input {
+    display: flex;
     border: 1px solid #d1d5db;
     background-color: var(--background-grey-accent);
-    padding: 0.5rem;
     border-radius: 0.375rem;
     outline: none;
     transition: border-color 0.3s ease;
+    vertical-align: middle;
+}
+
+.signup-input input {
+    background-color: transparent;
+    width: 100%;
+    padding: 0.5rem;
+}
+
+.signup-input button {
+    border-radius: 0.375rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.signup-input button:hover {
+    background-color: var(--foreground-grey-accent);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -59,21 +76,23 @@
     }
 }
 
-.signup-input:focus {
+.signup-input input:focus {
     border-color: #2563eb;
 }
 
 .password-toggle-button {
-    position: absolute;
-    right: 0.75rem;
-    top: 50%;
-    transform: translateY(-50%);
     background: none;
     border: none;
     font-size: 0.875rem;
     font-weight: bold;
-    color: black;
+    color: var(--foreground-rgb);
     cursor: pointer;
+}
+
+.password-requirements {
+    font-size: 12pt;
+    color: var(--foreground-grey-accent);
+    text-align: left;
 }
 
 .signup-button {

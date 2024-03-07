@@ -11,6 +11,11 @@ interface SidebarProps {
 }
 
 // Functional component for Sidebar
+//   isOpen: whether the sidebar is open.
+//   onClose: function to call when the sidebar is closed.
+//   onQueryClick: function to call when a search query is clicked.
+//   onLogoutClick: function to call when the logout button is clicked.
+//   onHomeClick: function to call when the home button is clicked.
 const SideBar: React.FC<SidebarProps> = ({ isOpen, onClose, onQueryClick, onHomeClick, onLogoutClick }) => {
     // This is so the buttons is sorted from up to down, latest to oldest
     var history = searchHistory.slice().reverse();

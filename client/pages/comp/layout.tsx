@@ -28,29 +28,35 @@ const Layout: React.FC<LayoutProps> = ({ navigation, children, showResults, fetc
     //      - If the search results are ready, display the search results.
     // Using the Next.js router.
     const router = useRouter();
-      // State variables for controlling the visibility of the SideBar and FullScreenSearch components.
+
+    // State variables for controlling the visibility of the SideBar and FullScreenSearch overlays.
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
    
+    // ================== SIDEBAR ==================
     // Function to toggle the visibility of the SideBar.
     const toggleSidebar = () => { // Sidebar overlay behavior.
       setIsSidebarOpen(!isSidebarOpen);
     };
+
     // Function to close the SideBar.
     const sidebarClose = () => {
       setIsSidebarOpen(false);
     };
+
     // Function to handle a click on a search query in the SideBar.
     const sidebarSearchQuery = (x: number) => {
         showResults(x);
         sidebarClose();
         router.push('/resultsPage');
     }
+
     // Function to navigate to the home page.
     const sidebarHome = () => {
         sidebarClose();
         router.push('/');
     }
+
     // Function to handle logout.
     const sidebarLogout = () => {
         Cookies.remove('email');
@@ -61,20 +67,24 @@ const Layout: React.FC<LayoutProps> = ({ navigation, children, showResults, fetc
         window.location.reload();
     }   // Reload the page.
 
+    // ================== SEARCH OVERLAY ==================
     // Function to toggle the visibility of the FullScreenSearch component.
     const toggleSearch = () => {// Search overlay behavior
         setIsSearchOpen(!isSearchOpen);
     };
+
     // Function to close the FullScreenSearch component.
     const closeSearch = () => {
         setIsSearchOpen(false);
     };
+
     // Function to handle a search action in the FullScreenSearch component.
     const doSearch = (p: string) => {
         closeSearch();
         fetchResults(p);
         router.push('/resultsPage');
     }
+
     // Render the Layout component.
     return (
         <div className="App">

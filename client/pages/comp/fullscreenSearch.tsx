@@ -8,26 +8,37 @@ interface FullScreenSearchProps {
   onSearch: (x: string) => void;
 }
 
-//// FullScreenSearch component TODO: Implement search functionality.
+/*  The full screen search component
+    This component pops up when the user presses the search button in the topbar, 
+     or when the user presses the search bar in the home page
+        isOpen: whether the search screen is open.
+        onClose: function to call when the search screen is closed.
+        onSearch: function to call when the user makes a search. 
+*/
 const FullScreenSearch: React.FC<FullScreenSearchProps> = ({ isOpen, onClose, onSearch }) => {
     const [textareaValue, setTextareaValue] = useState('');
+
     // State for the value of the textarea.
     const handleTextareaChange = (event: any) => {
         if (event.target.value.length < 2000) {// Handler for changes in the textarea.
             setTextareaValue(event.target.value);
         }
     };
+
     // Handler for the search action
-    const handleSearch = () => {// If the textarea is empty, return without performing the search.
+    const handleSearch = () => {
+        // If the textarea is empty, return without performing the search.
         if (textareaValue === '') return;   // TODO: Pop an error message.
         onSearch(textareaValue);  // Perform the search and clear the textarea.
         setTextareaValue(''); 
     }
+
     // Handler for closing the search screen.
     const handleClose = () => {
         setTextareaValue('');
-        onClose(); // Clear the textarea and close the search screen.
+        onClose();
     }
+
     // Render the full-screen search component.
     return (
         <div className={`full-screen-search ${isOpen ? 'open' : ''}`}>

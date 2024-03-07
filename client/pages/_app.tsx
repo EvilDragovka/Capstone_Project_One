@@ -13,12 +13,14 @@ import { useRouter } from 'next/router';
 import MainPage from './mainPage';
 import Layout from "./comp/layout";
 import ResultsPage from "./resultsPage";
+
 // Defining the User interface.
 export interface User {
     email: string | undefined;
     username: string | undefined;
     id: string | undefined;
 }
+
 // Defining the SearchQuery interface.
 export interface SearchQuery {
     prompt: string;
@@ -26,16 +28,17 @@ export interface SearchQuery {
     userId: string;
     queryId: string;
 }
-// Backend URL.
+
 export const backendUrl = 'http://52.13.109.29/';
-export var searchHistory: SearchQuery[] = [];// Search history and current search query.
-export var currentSearchQuery: SearchQuery | null = null;
-export const currentUser: User = {// Current user.
+export var searchHistory: SearchQuery[] = [];               // Search history
+export var currentSearchQuery: SearchQuery | null = null;   // Current search query (if any)
+export const currentUser: User = {      // Current user. Just gets the cookies if they exist.
     email: Cookies.get('email'),
     username: Cookies.get('username'),
     id: Cookies.get('id')
 };
-export var searching = false; // Searching state.
+export var searching = false; // Searching state. True if the app is currently searching, obviously.
+
 // Main App component.
 export default function App({ Component, pageProps }: AppProps) {
     const router = useRouter();

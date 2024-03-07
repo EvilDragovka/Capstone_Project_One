@@ -1,15 +1,17 @@
 'use client'
 import React from 'react';
-import FullScreenSearch from './fullscreenSearch';
+
 // Defining the props for the TopBar component.
 interface TopBarProps {
   showButtons: boolean;
   onMenuClick: () => void; // Add onMenuClick prop.
   onSearchClick: () => void; // Add onSearchClick prop.
 }
-// TopBar component.
-// TODO: 
-//  - Replace placeholder text with actual logo
+
+// TopBar component
+//   showButtons: whether to show the topbar buttons.
+//   onMenuClick: function to call when the menu button is clicked.
+//   onSearchClick: function to call when the search button is clicked.
 const TopBar: React.FC<TopBarProps> = ({showButtons, onMenuClick, onSearchClick}) => {
     return (
       <nav>
