@@ -8,9 +8,9 @@ Learnix is your gateway to a world where imagination meets code.
 
 🌟 Features:
 
-Generative Magic: Learnix harnesses the power of the Android Studio SDK and Llama 2 70b chat to 
-create stunning conversations. Whether you’re an artist, a game developer, or a data scientist, 
-Learnix has you covered.
+Generative Magic: Learnix harnesses the power of the Android Studio SDK and the Llama 2 70b chat 
+model by Meta to create stunning conversations. Whether you’re an artist, a game developer, or a 
+data scientist, Learnix has you covered.
 
 TypeScript Brilliance: Our proprietary TypeScript engine allows you to input prompts and watch Learnix 
 weave intricate narratives, compose poetry, or even generate code snippets. From Shakespearean sonnets 
