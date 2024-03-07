@@ -98,7 +98,7 @@ def llama_complete(question: str, userid: int = 62, debug: bool = False):
     To repeat, the ONLY words you can respond with are: 'GENERAL', 'SEARCH', 'PAPER', 'ANSWER', and 'FILTER' and
     you can respond ONLY with a single word.
     
-    If there is a previous conversation, use it ONLY context for the question: {chat_history}
+    If there is a previous conversation, use it ONLY for context for the question: {chat_history}
     Question: {question}
     """
                                           )
@@ -116,7 +116,7 @@ def llama_complete(question: str, userid: int = 62, debug: bool = False):
     Current year: """ + str(date.today().year) + """ 
     and the current date: """ + str(date.today()) + """
     
-    Previous conversation history, use this for only when asked follow-up questions or they require context: {chat_history}
+    Previous conversation history (if any): {chat_history}
     Respond to the question:
     Question: {input}
     
