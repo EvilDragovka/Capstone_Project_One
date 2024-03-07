@@ -22,3 +22,7 @@ nav div {
 nav button:hover {
   background-color: var(--accent-hover);
 }
+
+nav #logo {
+  user-select: none;
+}
