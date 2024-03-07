@@ -17,7 +17,6 @@ def get_recent(user_id):
     count = int(request.args.get('count', 5))
     offset = int(request.args.get('offset', 0))
     queries = query_service.get_recent(user_id, count, offset)
-    print(queries)
     return jsonify([query.to_dict() for query in queries])
 
 
