@@ -66,6 +66,10 @@
     padding-right: 1rem;
 }
 
+.signup-input button * {
+    filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.0));
+}
+
 .signup-input button:hover {
     background-color: var(--foreground-grey-accent);
 }
