@@ -20,6 +20,7 @@ def get_recent(user_id):
     print(queries)
     return jsonify([query.to_dict() for query in queries])
 
+
 # Adds into database, expects user_id, question, and response
 # Expects a json object
 @query_bp.route('/save/<int:user_id>', methods=['POST'])

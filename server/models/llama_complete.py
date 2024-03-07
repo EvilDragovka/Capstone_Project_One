@@ -36,21 +36,28 @@ def llama_complete(question: str, userid: int = 62, debug: bool = True):
     # Helps to notify the saving function to not save a response
     fuse = False
 
+    # User ID is set to 62 if its not passed, this means that the history will not be accurate
     if userid == 62:
         print("Error: User ID is not set, please set the user id to the correct user id")
         print("Will continue as normal but history will not be accurate")
 
-    # Request made locally (Should work on the server as no external requests are made)
-    # This WILL happen every time because the memory is only the most recent 5
-    url = f"http://52.13.109.29/api/queries/recent/{userid}"
-    response = requests.get(url)
-    data = response.json()
 
+    # Memory declaration - primarily used for context
     router_memory = ConversationBufferWindowMemory(k=4, return_messages=True)
-    # If there is data, then the context memory is loaded, else its just a empty memory
-    if data:
-        for i in range(len(data)):
-            router_memory.save_context({"input": data[i].get("question")}, {"output": data[i].get("response")})
+
+    # Request made locally (Should work on the server as no external requests are made)
+    # This WILL happen every time because the memory is only the most recent 4
+    try:
+        url = f"http://52.13.109.29/api/queries/recent/{userid}"
+        response = requests.get(url)
+        data = response.json()
+        # If there is data, then the context memory is loaded, else its just a empty memory
+        if data:
+            for i in range(len(data)):
+                router_memory.save_context({"input": data[i].get("question")}, {"output": data[i].get("response")})
+    except:
+        print("Error: Could not load recent queries, past history will have a note in of this")
+        router_memory.save_context({"input": "Who are you?"}, {"output": "I am Learnix, an AI designed to assist with academic and research endeavors."})
 
     # Llama model declaration
     # Used for general responses
@@ -107,7 +114,7 @@ def llama_complete(question: str, userid: int = 62, debug: bool = True):
     Current year: """ + str(date.today().year) + """ 
     and the current date: """ + str(date.today()) + """
     
-    Previous conversation history: {chat_history}
+    Previous conversation history, use this for context: {chat_history}
     Respond to the question:
     Question: {input}
     
@@ -277,9 +284,14 @@ def llama_complete(question: str, userid: int = 62, debug: bool = True):
             fuse = True
             return {"input": output.get("input"), "output": "The response took too long to generate, please try again. If the problem persists, please try another question or notify the developers."}
         # Means that the AI tripped the filter on Azure
-        except HTTPError:
-            fuse = True
-            return {"input": output.get("input"), "output": "Hi there, your prompt has tripped the content safety filter and unfortunately I cannot answer your question. Please know that I am here to help with any questions that depend on academic research and learning. If you have any other questions, feel free to ask!"}
+        except HTTPError as err:
+            if err.code == [424, 500]:
+                if err.code == 424:
+                    fuse = True
+                    return {"input": output.get("input"), "output": "Hi there, your prompt has tripped the content safety filter and unfortunately I cannot answer your question. Please know that I am here to help with any questions that depend on academic research and learning. If you have any other questions, feel free to ask!"}
+                elif err.code == 500:
+                    fuse = True
+                    return {"input": output.get("input"), "output": "There was a problem with the AI trying to create your request as it seems like it might be overwhelmed. Please try again at a later time. If the problem persists, please alert the developers or check your internet connection."}
 
     chain = RunnableMap({
         "action": router_chain,
