@@ -87,13 +87,13 @@ The server should run on port 5000.
 
 The client should run on port 3000.
 
-## Android Usage
+## Android Usage & Building Application
 
 Make sure you have [Android Studio](https://developer.android.com/studio/install) installed, Developer Mode is enabled in your Android device, and USB Debugging or Wi-Fi Debugging is enabled on your Android. You can also use an Android Emulator.
 
 Don't forget to re-run `npm install` to install all necessary packages.
 
-1. Navigate to the `client`
+1. Navigate to the `client` folder
 
 2. Add the android platform
 
