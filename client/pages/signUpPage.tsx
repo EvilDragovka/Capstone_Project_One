@@ -6,6 +6,7 @@ import WelcomePage from './welcomePage';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { backendUrl } from './_app';
+import { App } from '@capacitor/app';
 
 // Checks if the password is strong enough.
 function isStrongPassword(password: string) {
@@ -19,6 +20,12 @@ function SignUpPage() {
     const route = useRouter()
     const [showPassword, setShowPassword] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+
+    // Support for the Android back button
+    //  When the back button is pressed, go back to the welcome page.
+    App.addListener('backButton', () => {
+        route.push('/');
+    });
 
     // State for form data.
     const [data, setData] = useState({

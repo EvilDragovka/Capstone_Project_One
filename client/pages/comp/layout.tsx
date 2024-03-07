@@ -6,6 +6,8 @@ import SideBar from "./sidebar";
 import FullScreenSearch from "./fullscreenSearch";
 import Cookies from 'js-cookie';
 import { currentSearchQueryAvailable, searchHistory } from '../_app';
+import { App } from '@capacitor/app';
+
 // Defining the props for the Layout component.
 interface LayoutProps {
     navigation: boolean
@@ -14,7 +16,7 @@ interface LayoutProps {
     showResults: (i: number) => void;
     fetchResults: (p: string) => void;
 }
-// The Layout component that wraps around the main content of the page.
+
 // The layout of the page.
 //   navigation: whether to show the topbar buttons and sidebar.
 //   children: the content of the page.
@@ -32,6 +34,16 @@ const Layout: React.FC<LayoutProps> = ({ navigation, children, showResults, fetc
     // State variables for controlling the visibility of the SideBar and FullScreenSearch overlays.
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+    // Support for the Android back button.
+    // Weird feature where when the search is open, the back button closes the search, but also opens the sidebar.
+    App.addListener('backButton', () => {
+        if (isSearchOpen) {
+            closeSearch();
+        } else {
+            toggleSidebar();
+        }
+    });
    
     // ================== SIDEBAR ==================
     // Function to toggle the visibility of the SideBar.
