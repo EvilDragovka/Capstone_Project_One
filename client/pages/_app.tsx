@@ -13,62 +13,62 @@ import { useRouter } from 'next/router';
 import MainPage from './mainPage';
 import Layout from "./comp/layout";
 import ResultsPage from "./resultsPage";
-
+// Defining the User interface.
 export interface User {
     email: string | undefined;
     username: string | undefined;
     id: string | undefined;
 }
-
+// Defining the SearchQuery interface.
 export interface SearchQuery {
     prompt: string;
     result: string | null;
     userId: string;
     queryId: string;
 }
-
+// Backend URL.
 export const backendUrl = 'http://52.13.109.29/';
-export var searchHistory: SearchQuery[] = [];
+export var searchHistory: SearchQuery[] = [];// Search history and current search query.
 export var currentSearchQuery: SearchQuery | null = null;
-export const currentUser: User = { 
+export const currentUser: User = {// Current user.
     email: Cookies.get('email'),
     username: Cookies.get('username'),
     id: Cookies.get('id')
 };
-export var searching = false;
-
+export var searching = false; // Searching state.
+// Main App component.
 export default function App({ Component, pageProps }: AppProps) {
     const router = useRouter();
 
-    // These are for the results page
+    // State variables for the results page.
     const [prompt, setDisplayedPrompt] = useState('');
     const [result, setDisplayedResult] = useState('');
 
-    // Load the most recent search query
+    // Load the most recent search query.
     if (!searchHistory.length) {
         var history = Cookies.get('searchHistory');
         searchHistory = JSON.parse(history || '[]');
     }
 
-    // Check if the user is logged in
+    // Check if the user is logged in.
     var goToWelcomeUpPage = currentUser.email === undefined ||
         currentUser.username === undefined ||
         currentUser.id === undefined ||
         Cookies.get('timestamp') === undefined ||
         (Date.now() - parseInt(Cookies.get('timestamp') || '0')) > 1000 * 60 * 60 * 24 * 7;
 
-    // These two functions are for the results page
-    //   Well, they're passed to the layout, but they're to display the results
-    //   It was the best code design I could think of
-
-    // Call this if there's a prompt but no current search query made
+    // These two functions are for the results page.
+    //   Well, they're passed to the layout, but they're to display the results.
+    //   It was the best code design I could think of.
+    // Call this if there's a prompt but no current search query made.
+    // Function to fetch the results of a search query.
     const fetchResults = async (p: string) => {
         searching = true;
         // Set the prompt and the loading message
         setDisplayedPrompt(p);
         setDisplayedResult('');
 
-        // Fetch the results from the backend
+        // Fetch the results from the backend.
         console.log('Searching...');
         const response = await postToLlm(p).catch((error) => {
             console.error('Error:', error);
@@ -76,7 +76,7 @@ export default function App({ Component, pageProps }: AppProps) {
             setDisplayedResult("I'm sorry, something went wrong. Please try again.");
         }).then((response) => {
             console.log('Finished search.');
-            // Push the search query to the search history
+            // Push the search query to the search history.
             var query: SearchQuery = {
                 prompt: p,
                 result: response,
@@ -100,7 +100,7 @@ export default function App({ Component, pageProps }: AppProps) {
     }
 
     /* =================== ROUTERS =================== */
-    // Sign up page
+    // Sign up page.
     if (router.pathname === '/signUpPage') {
         return (
             <Layout navigation={false} showBottomBar={false} showResults={(i: number) => showResults(i)} fetchResults={(p: string) => fetchResults(p)}>
@@ -109,7 +109,7 @@ export default function App({ Component, pageProps }: AppProps) {
         );
     }
 
-    // Welcome page
+    // Welcome page.
     if (goToWelcomeUpPage) {
         return (
             <Layout navigation={false} showBottomBar={false} showResults={(i: number) => showResults(i)} fetchResults={(p: string) => fetchResults(p)}>
@@ -144,7 +144,7 @@ export function currentSearchQueryAvailable() {
     return (searching || currentSearchQuery);
 }
 
-// Sends a prompt to the LLM and returns the response
+// Sends a prompt to the LLM and returns the response.
 async function postToLlm(p: string) {
     let data = {
         question: p,
@@ -162,8 +162,8 @@ async function postToLlm(p: string) {
     return json.response;
 }
 
-// Pushes a search query to the search history
-//   Oldest search query gets removed if the history is full
+// Pushes a search query to the search history.
+//   Oldest search query gets removed if the history is full.
 function pushSearchHistory(query: SearchQuery) {
     if (searchHistory.length >= 5) {
         searchHistory.shift();
@@ -175,7 +175,7 @@ function pushSearchHistory(query: SearchQuery) {
     Cookies.set('searchHistory', JSON.stringify(searchHistory));
 }
 
-// Brings the indexed query to the top of the search history
+// Brings the indexed query to the top of the search history.
 function makeLatestSearchQuery(i: number) {
     if (i >= 0 && i < searchHistory.length) {
         currentSearchQuery = searchHistory[i];

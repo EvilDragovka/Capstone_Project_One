@@ -6,23 +6,23 @@ import WelcomePage from './welcomePage';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { backendUrl } from './_app';
-// React components for the sign-up page
+// React components for the sign-up page.
 function SignUpPage() {
     const route = useRouter()
     const [showPassword, setShowPassword] = useState(false);
-
+    // State for form data.
     const [data, setData] = useState({
         username: "",
         email: "",
         password: ""
     });
 
-    // Function to see entred password
+    // Function to toggle password visibility.
     const handlePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
 
-    // Function for handling input changes
+    // Function for handling input changes.
     const handleChange = (e: any) => {
         const value = e.target.value;
         setData({
@@ -30,14 +30,14 @@ function SignUpPage() {
             [e.target.name]: value
         });
     };
-    // Function for handling user information and sending the data to backend
+    // Function for handling user information and sending the data to backend.
     const handleSubmit = (e: any) => {
         e.preventDefault();
         const userData = {
             username: data.email,
             email: data.email,
             password: data.password
-        };
+        }; // Post the user data to the backend.
         axios.post(backendUrl + "api/users/register", userData).then((response) => {
             console.log(response.status, response.data.token);
         })
@@ -50,15 +50,15 @@ function SignUpPage() {
             } else {
                 console.log(error)
             }
-        });
+        }); // Set cookies.
         Cookies.set('email', data.email);
         Cookies.set('username', data.username);
         Cookies.set('id', data.email);
         Cookies.set('timestamp', Date.now().toString());
-        window.location.reload();
+        window.location.reload();// Reload the page.
     };
 
-    //sign-up UI
+    // Render the sign-up UI.
     return (
         <div className="signup-container">
             <div className="signup-form-container">
@@ -105,6 +105,5 @@ function SignUpPage() {
         </div>
     );
 };
-
-
+// Export the SignUpPage component
 export default SignUpPage;

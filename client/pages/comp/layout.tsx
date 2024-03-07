@@ -6,7 +6,7 @@ import SideBar from "./sidebar";
 import FullScreenSearch from "./fullscreenSearch";
 import Cookies from 'js-cookie';
 import { currentSearchQueryAvailable, searchHistory } from '../_app';
-
+// Defining the props for the Layout component.
 interface LayoutProps {
     navigation: boolean
     children: ReactNode;
@@ -14,44 +14,44 @@ interface LayoutProps {
     showResults: (i: number) => void;
     fetchResults: (p: string) => void;
 }
-
-// The layout of the page
-//   navigation: whether to show the topbar buttons and sidebar
-//   children: the content of the page
-//   showResults: function called when clicking on a sidebar search query
-//   fetchResults: function to call when the user makes a search
+// The Layout component that wraps around the main content of the page.
+// The layout of the page.
+//   navigation: whether to show the topbar buttons and sidebar.
+//   children: the content of the page.
+//   showResults: function called when clicking on a sidebar search query.
+//   fetchResults: function to call when the user makes a search.
 const Layout: React.FC<LayoutProps> = ({ navigation, children, showResults, fetchResults }) => {
     // LOGIC:
-    //   - If no search query was made, just display the welcome page
+    //   - If no search query was made, just display the welcome page.
     //   - Else, 
-    //      - If the app is currently waiting for the search results, display the prompt and the loading spinner below it
-    //      - If the search results are ready, display the search results
-
+    //      - If the app is currently waiting for the search results, display the prompt and the loading spinner below it.
+    //      - If the search results are ready, display the search results.
+    // Using the Next.js router.
     const router = useRouter();
-
+      // State variables for controlling the visibility of the SideBar and FullScreenSearch components.
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
-
-    // Sidebar overlay behavior
-    const toggleSidebar = () => {
+   
+    // Function to toggle the visibility of the SideBar.
+    const toggleSidebar = () => { // Sidebar overlay behavior.
       setIsSidebarOpen(!isSidebarOpen);
     };
-  
+    // Function to close the SideBar.
     const sidebarClose = () => {
       setIsSidebarOpen(false);
     };
-
+    // Function to handle a click on a search query in the SideBar.
     const sidebarSearchQuery = (x: number) => {
         showResults(x);
         sidebarClose();
         router.push('/resultsPage');
     }
-
+    // Function to navigate to the home page.
     const sidebarHome = () => {
         sidebarClose();
         router.push('/');
     }
-
+    // Function to handle logout.
     const sidebarLogout = () => {
         Cookies.remove('email');
         Cookies.remove('username');
@@ -59,23 +59,23 @@ const Layout: React.FC<LayoutProps> = ({ navigation, children, showResults, fetc
         Cookies.remove('timestamp');
         // Cookies.remove('searchHistory');
         window.location.reload();
-    }
+    }   // Reload the page.
 
-    // Search overlay behavior
-    const toggleSearch = () => {
+    // Function to toggle the visibility of the FullScreenSearch component.
+    const toggleSearch = () => {// Search overlay behavior
         setIsSearchOpen(!isSearchOpen);
     };
-
+    // Function to close the FullScreenSearch component.
     const closeSearch = () => {
         setIsSearchOpen(false);
     };
-
+    // Function to handle a search action in the FullScreenSearch component.
     const doSearch = (p: string) => {
         closeSearch();
         fetchResults(p);
         router.push('/resultsPage');
     }
-
+    // Render the Layout component.
     return (
         <div className="App">
             <TopBar showButtons={navigation} onMenuClick={toggleSidebar} onSearchClick={toggleSearch} />
@@ -93,5 +93,5 @@ const Layout: React.FC<LayoutProps> = ({ navigation, children, showResults, fetc
         </div>
     );
 };
-
+// Export the Layout component.
 export default Layout;

@@ -4,30 +4,31 @@ import Cookies from 'js-cookie';
 import { useRouter } from 'next/router';
 import { backendUrl } from './_app';
 
-// Function for sending the login credentials to the backend
+// Function for sending the login credentials to the backend.
 async function loginUser(credentials: {email: string, password: string} ) {
     const response = await fetch(backendUrl + 'api/users/login', {
-        method: 'POST',
+        method: 'POST',// Send a POST request to the backend with the login credentials.
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(credentials),
-    });
+    }); // If the response status is 401 (Unauthorized), log an error message.
     if (response.status === 401) {
         console.log('Invalid credentials');
         return response.status;
-    }
+    } // If the response is not ok, log an error message.
     if (!response.ok) {
         console.log('Server error');
         return response.status;
     }
     const data = await response.json();
-    console.log(data);
+    console.log(data); // Parse the response data as JSON
     Cookies.set('email', data.user.email);
     Cookies.set('username', data.user.username);
     Cookies.set('id', data.user.id);
     Cookies.set('timestamp', Date.now().toString());
-    return response.status;
-}
-// React components for the login page
+    return response.status; // Set cookies with the user's email, 
+}                           // username, id, and the current timestamp.
+
+// React components for the login page.
 function WelcomePage() {
     const router = useRouter();
     const [formData, setFormData] = useState({
@@ -37,7 +38,7 @@ function WelcomePage() {
     const [errorMessage, setErrorMessage] = useState('');
     const [title, setTitle] = useState('Welcome!');
     const [inactive, setInactive] = useState(false);
-    // Function for handling input changes
+    // Function for handling input changes.
     const handleChange = (event: any) => {
         const { name, value } = event.target;
         setFormData(prevState => ({
@@ -45,7 +46,7 @@ function WelcomePage() {
             [name]: value
         }));
     };
-    // Function for submission  verification
+    // Function for submission verification.
     const onSubmitClick = async (event: any) =>  {
         event.preventDefault();
         // Checks if the email and the password is provided
@@ -57,10 +58,10 @@ function WelcomePage() {
         setTitle('Logging in...');
         setErrorMessage('');
         setInactive(true);
-        // Calls the loginUser function to attempt login
+        // Calls the loginUser function to attempt login.
         let response = await loginUser(formData);
         console.log(response);
-        // if login is successful direct to home page, else show error message
+        // if login is successful direct to home page, else show error message.
         if (response == 200) {
             router.push('/');
             window.location.reload();
@@ -73,7 +74,7 @@ function WelcomePage() {
         setInactive(false);
     }
 
-    //login UI
+    //Render the login UI.
     return (
         <div className="welcome-container">
             <div className="welcome-content">
@@ -104,5 +105,5 @@ function WelcomePage() {
         </div>
     );
 }
-
+// Export the WelcomePage component.
 export default WelcomePage;

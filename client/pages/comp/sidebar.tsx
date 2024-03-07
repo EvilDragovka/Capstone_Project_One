@@ -1,7 +1,7 @@
 'use client'
 import React from 'react';
 import { searchHistory } from '../_app';
-
+// Defining the props for the SideBar component.
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
@@ -20,12 +20,12 @@ const SideBar: React.FC<SidebarProps> = ({ isOpen, onClose, onQueryClick, onHome
     });
     historyInd = historyInd.slice().reverse();
 
-    // Set each button to a number. That number indexes the search history
+    // Set each button to a number. That number indexes the search history.
     var dom: JSX.Element[] = [];
     history.forEach((query, index) => {
         dom.push(<button className="search-query-btn" key={historyInd[index]} onClick={() => onQueryClick(historyInd[index])}><i className="fi fi-br-search"></i><text>{query.prompt}</text></button>);
     });
-    //sidebar UI
+    //Render sidebar UI
     return (
         <>
             <div className={`sidebar-overlay ${isOpen ? 'open' : ''}`} onClick={onClose}></div>
@@ -44,5 +44,5 @@ const SideBar: React.FC<SidebarProps> = ({ isOpen, onClose, onQueryClick, onHome
         </>
     );
 };
-
+// Export the SideBar component.
 export default SideBar;

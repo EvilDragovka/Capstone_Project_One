@@ -1,14 +1,14 @@
 // ResultsPage.tsx
 import { searching } from './_app';
 import Markdown from 'react-markdown'
-
+// Defining the props for the ResultsPage component.
 interface ResultsPageProps {
     prompt: string | null;
     result: string | null;
 }
-// Functional component and UI for displaying search results
+// Functional component and UI for displaying results of a search. 
 export default function ResultsPage({ prompt, result}: ResultsPageProps) {
-    // The results page
+    // Render the results page component.
     return (
         <div className="results-page">
             <div className="search-prompt">
