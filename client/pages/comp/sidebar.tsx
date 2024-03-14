@@ -8,6 +8,7 @@ interface SidebarProps {
   onQueryClick: (x: number) => void;
   onLogoutClick: () => void;
   onHomeClick: () => void;
+  onAboutClick: () => void;
 }
 
 // Functional component for Sidebar
@@ -16,7 +17,7 @@ interface SidebarProps {
 //   onQueryClick: function to call when a search query is clicked.
 //   onLogoutClick: function to call when the logout button is clicked.
 //   onHomeClick: function to call when the home button is clicked.
-const SideBar: React.FC<SidebarProps> = ({ isOpen, onClose, onQueryClick, onHomeClick, onLogoutClick }) => {
+const SideBar: React.FC<SidebarProps> = ({ isOpen, onClose, onQueryClick, onHomeClick, onLogoutClick, onAboutClick }) => {
     // This is so the buttons is sorted from up to down, latest to oldest
     var history = searchHistory.slice().reverse();
     var historyInd: number[] = [];
@@ -43,6 +44,7 @@ const SideBar: React.FC<SidebarProps> = ({ isOpen, onClose, onQueryClick, onHome
                 </div>
                 <div className="bottom-btns">
                     <button onClick={onLogoutClick}><i className="fi fi-rr-exit"></i><text>Logout</text></button>
+                    <button onClick={onAboutClick}><i className="fi fi-rr-info"></i><text>About</text></button>
                     <button onClick={onHomeClick}><i className="fi fi-rr-home"></i><text>Home</text></button>
                 </div>
             </div>

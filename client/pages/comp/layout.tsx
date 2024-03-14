@@ -22,7 +22,7 @@ interface LayoutProps {
 //   children: the content of the page.
 //   showResults: function called when clicking on a sidebar search query.
 //   fetchResults: function to call when the user makes a search.
-const Layout: React.FC<LayoutProps> = ({ navigation, children, showResults, fetchResults }) => {
+const Layout: React.FC<LayoutProps> = ({ navigation, showBottomBar, children, showResults, fetchResults }) => {
     // LOGIC:
     //   - If no search query was made, just display the welcome page.
     //   - Else, 
@@ -69,6 +69,11 @@ const Layout: React.FC<LayoutProps> = ({ navigation, children, showResults, fetc
         router.push('/');
     }
 
+    const sidebarAbout = () => {
+        sidebarClose();
+        router.push('/aboutPage');
+    }
+
     // Function to handle logout.
     const sidebarLogout = () => {
         Cookies.remove('email');
@@ -105,10 +110,11 @@ const Layout: React.FC<LayoutProps> = ({ navigation, children, showResults, fetc
                 onClose={sidebarClose} 
                 onQueryClick={(x: number) => sidebarSearchQuery(x)}
                 onHomeClick={sidebarHome} 
-                onLogoutClick={sidebarLogout}/>}
+                onLogoutClick={sidebarLogout}
+                onAboutClick={sidebarAbout}/>}
             {navigation && <FullScreenSearch isOpen={isSearchOpen} onClose={closeSearch} onSearch={doSearch} />}
             {children}
-            {navigation && !(currentSearchQueryAvailable() && router.pathname.indexOf('/resultsPage') != -1) && <button id="intro-search-button" onClick={toggleSearch}> 
+            {showBottomBar && !(currentSearchQueryAvailable() && router.pathname.indexOf('/resultsPage') != -1) && <button id="intro-search-button" onClick={toggleSearch}> 
                 {searchHistory.length > 0 ? <text>Keep at it!</text> : <text>Make the first step!</text>}
                 <i className="fi fi-br-search"></i>
             </button>}

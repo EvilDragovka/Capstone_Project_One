@@ -78,6 +78,28 @@ button i, button text {
   flex-direction: column;
 }
 
+.about-page {
+  position: absolute;
+  display: flex;
+  height: calc(100% - var(--topbar-height));
+  padding: 1rem;
+  width: 100%;
+  justify-content: space-between;
+  flex-direction: column;
+}
+
+.about-page h1 {
+  font-size: 24pt;
+  font-weight: bolder;
+  margin-bottom: 0.5rem;
+}
+
+.about-page a {
+  color: var(--accent-color);
+  font-size: 12pt;
+  font-weight: bolder;
+}
+
 .main-page {
   user-select: none;
 }

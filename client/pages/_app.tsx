@@ -13,6 +13,7 @@ import { useRouter } from 'next/router';
 import MainPage from './mainPage';
 import Layout from "./comp/layout";
 import ResultsPage from "./resultsPage";
+import AboutPage from "./aboutPage";
 
 // Defining the User interface.
 export interface User {
@@ -117,6 +118,15 @@ export default function App({ Component, pageProps }: AppProps) {
         return (
             <Layout navigation={false} showBottomBar={false} showResults={(i: number) => showResults(i)} fetchResults={(p: string) => fetchResults(p)}>
                 <WelcomePage />
+            </Layout>
+        );
+    }
+
+    // About page.
+    if (router.pathname === '/aboutPage') {
+        return (
+            <Layout navigation={true} showBottomBar={false} showResults={(i: number) => showResults(i)} fetchResults={(p: string) => fetchResults(p)}>
+                <AboutPage />
             </Layout>
         );
     }
