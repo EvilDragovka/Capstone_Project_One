@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name="app_name">Learnix</string>
-    <string name="title_activity_main">Learnix</string>
-    <string name="package_name">com.learnix.app</string>
-    <string name="custom_url_scheme">com.learnix.app</string>
-</resources>
