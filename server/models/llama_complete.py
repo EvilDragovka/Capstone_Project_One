@@ -174,7 +174,7 @@ def llama_complete(question: str, userid: int = 62, debug: bool = False):
     
     Thought: Do I need to use a tool? Yes
     Action: Wikipedia
-    Action Input: 'Quantum Computing Basics'
+    Action Input: Quantum Computing Basics
     Observation: Wikipedia provided a detailed overview of quantum computing principles.
     Thought: Do I need to use a tool? No
     Final Answer: Quantum computing is a field of computing focused on developing computer technology based on the
@@ -204,7 +204,7 @@ def llama_complete(question: str, userid: int = 62, debug: bool = False):
             academic papers on the web. Information from this tool is always accurate, but make sure to summarize the
             information. When using the information from the tool, make sure to tell the user information from arxiv 
             only shows the 3 most recent papers from the author, on the topic, or similar to DOI number that is given.
-            Action Input must be the exact search query for the paper. Example: 'History of Artificial Intelligence'
+            Action Input must be the exact search query for the paper. Example: History of Artificial Intelligence
             """
         ),
         Tool(
@@ -214,7 +214,7 @@ def llama_complete(question: str, userid: int = 62, debug: bool = False):
             topics. This can be used for authors, places, events, topics, and more. When using the information from the 
             tool, make sure to tell the user that the information from wikipedia is often accurate but should be
             verified alongside other sources.
-            Action Input must be the exact search query for the topic. Example: 'Evolution of Quantum Computing' 
+            Action Input must be the exact search query for the topic. Example: Evolution of Quantum Computing
             """
         ),
         Tool(
@@ -230,7 +230,7 @@ def llama_complete(question: str, userid: int = 62, debug: bool = False):
             - Extracts and processes relevant information for a direct response.
 
             **Example:**
-            - Input: 'Quantum Computing advancements'
+            - Input: Quantum Computing advancements
             - The tool searches, then provides a synthesized response based on authoritative sources.
             Designed for efficient, loop-free academic research using DuckDuckGo.
             """
