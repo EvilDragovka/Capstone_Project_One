@@ -1,10 +1,10 @@
 import requests
+from config import AWSUrl
 # /api/llama/llama_complete
-# Server ip is: 52.13.109.29, using locally use localhost:5000
 userid = 1
-url = f"http://52.13.109.29/api/llama/llama_complete"
+url = f"http://localhost:5000/api/llama/llama_complete"
 data = {
-    "question": "What does the paper 1605.08386 say?",
+    "question": "What is the meaning of life?",
     "userid": userid
 }
 

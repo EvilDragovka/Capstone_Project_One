@@ -6,24 +6,20 @@ from langchain_community.chat_models.azureml_endpoint import AzureMLChatOnlineEn
 from langchain_community.llms.azureml_endpoint import AzureMLEndpointApiType
 from langchain_core.messages import SystemMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder, HumanMessagePromptTemplate
-from config import ConfigAzure
-
+from config import ConfigAzure, ConfigGroq, ConfigAzureURL
+from langchain_groq import ChatGroq
 
 # LLM Model declaration
 # Uses azure_key and AzureURL, throws it into AzureMLChatOnlineEndpoint which formats it to what
 # Azure expects. Returns model
 # DO NOT USE DIRECTLY IN FLASK
 def llm():
-    azure_key = ConfigAzure.azure_key
-    url = 'https://Llama2-70bchat-cscapstone-serverless.eastus2.inference.ai.azure.com/v1/chat/completions'
-    model = AzureMLChatOnlineEndpoint(
-        endpoint_url=url,
-        endpoint_api_type=AzureMLEndpointApiType.serverless,
-        endpoint_api_key=azure_key,
-        content_formatter=LlamaChatContentFormatter(),
-        model_kwargs={"temperature": 0.6,
-                      "max_tokens": 600},
-        request_timeout=120,
+    groq_key = ConfigGroq.groq_key
+    model = ChatGroq(
+        groq_api_key=groq_key,
+        temperature=0.6,
+        model_name="llama2-70b-4096",
+        max_tokens=600,
     )
     return model
 
@@ -32,17 +28,13 @@ def llm():
 # Takes in temperature, max_tokens, and presence_penalty
 # Temperature is creativity, max_tokens is the length of the response, and presence_penalty is the
 # uniqueness of the response (from -2 to 2, higher being more unique)
-def adjusted_llm(temperature: float, max_tokens: int, presence_penalty: float):
-    azure_key = ConfigAzure.azure_key
-    url = 'https://Llama2-70bchat-cscapstone-serverless.eastus2.inference.ai.azure.com/v1/chat/completions'
-    model = AzureMLChatOnlineEndpoint(
-        endpoint_url=url,
-        endpoint_api_type=AzureMLEndpointApiType.serverless,
-        endpoint_api_key=azure_key,
-        content_formatter=LlamaChatContentFormatter(),
-        model_kwargs={"temperature": temperature,
-                      "max_tokens": max_tokens,
-                      "presence_penalty": presence_penalty},
+def adjusted_llm(temperature: float, max_tokens: int):
+    groq_key = ConfigGroq.groq_key
+    model = ChatGroq(
+        groq_api_key=groq_key,
+        temperature=temperature,
+        model_name="llama2-70b-4096",
+        max_tokens=max_tokens,
     )
     return model
 
@@ -115,8 +107,8 @@ def conversation(question: str):
 # Similar to conversation with llama
 # Takes in question, temperature, max_tokens, and presence_penalty
 # Adjusts the LLM model to the given parameters
-def adjusted_conversation(question: str, temperature: float, max_tokens: int, presence_penalty: float):
-    llama = adjusted_llm(temperature, max_tokens, presence_penalty)
+def adjusted_conversation(question: str, temperature: float, max_tokens: int):
+    llama = adjusted_llm(temperature, max_tokens)
     template = prompt_template()
     chat = LLMChain(llm=llama, prompt=template, verbose=False)
     response = chat.predict(user_input=question)

@@ -13,12 +13,13 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnableMap
 from langchain_core.tools import Tool
 from langsmith import Client
+from config import AWSUrl
 from service.llama_functions import llm, adjusted_llm
 
 
 # POST to the server the question and response
 def save_response_to_server(userid: int, question: str, response: str):
-    url = f"http://52.13.109.29/api/queries/save/{userid}"
+    url = f"http://" + AWSUrl.url + "/api/queries/save/{userid}"
     data = {
         "question": question,
         "response": response
@@ -48,7 +49,7 @@ def llama_complete(question: str, userid: int = 62, debug: bool = False):
     # Request made locally (Should work on the server as no external requests are made)
     # This WILL happen every time because the memory is only the most recent 4
     try:
-        url = f"http://52.13.109.29/api/queries/recent/{userid}"
+        url = f"http://" + AWSUrl.url + "/api/queries/recent/{userid}"
         response = requests.get(url)
         data = response.json()
         # If there is data, then the context memory is loaded, else its just a empty memory
@@ -64,13 +65,13 @@ def llama_complete(question: str, userid: int = 62, debug: bool = False):
     llama = llm()
 
     # Severely adjusted llama model limiting the model to only 30 tokens (22 words), used for context analysis
-    llama_adjusted = adjusted_llm(temperature=0.6, max_tokens=30, presence_penalty=0)
+    llama_adjusted = adjusted_llm(temperature=0.6, max_tokens=30)
 
     # langsmith tracking
     os.environ["LANGCHAIN_TRACING_V2"] = "true"
     os.environ["LANGCHAIN_ENDPOINT"] = "https://api.smith.langchain.com"
     os.environ["LANGCHAIN_API_KEY"] = "ls__de882389727f48219891d9e0849bc26b"
-    os.environ["LANGCHAIN_PROJECT"] = "Llama2-refinedadvanced"
+    os.environ["LANGCHAIN_PROJECT"] = "Llama2-continued"
     client = Client()
 
     # Prompt template for conversation selection
