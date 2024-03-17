@@ -49,7 +49,7 @@ def llama_complete(question: str, userid: int = 62, debug: bool = False):
     # Request made locally (Should work on the server as no external requests are made)
     # This WILL happen every time because the memory is only the most recent 4
     try:
-        url = f"http://" + AWSUrl.url + "/api/queries/recent/{userid}"
+        url = f"http://" + AWSUrl.url + "/api/queries/recent/" + str(userid)
         response = requests.get(url)
         data = response.json()
         # If there is data, then the context memory is loaded, else its just a empty memory
